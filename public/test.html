@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPK API Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-4xl mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">Sistem Pengurusan Kewarganegaraan - API Test</h1>
+
+        <!-- Registration Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">1. User Registration</h2>
+            <div class="space-y-3">
+                <input type="email" id="regEmail" placeholder="Email" class="w-full px-3 py-2 border rounded">
+                <input type="text" id="regName" placeholder="Full Name" class="w-full px-3 py-2 border rounded">
+                <input type="password" id="regPassword" placeholder="Password" class="w-full px-3 py-2 border rounded">
+                <button onclick="register()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                    Register
+                </button>
+            </div>
+            <div id="regResult" class="mt-3 text-sm"></div>
+        </div>
+
+        <!-- Login Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">2. Login</h2>
+            <div class="space-y-3">
+                <input type="email" id="loginEmail" placeholder="Email" class="w-full px-3 py-2 border rounded">
+                <input type="password" id="loginPassword" placeholder="Password" class="w-full px-3 py-2 border rounded">
+                <button onclick="login()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                    Login
+                </button>
+            </div>
+            <div id="loginResult" class="mt-3 text-sm"></div>
+        </div>
+
+        <!-- Create Application Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">3. Create Application</h2>
+            <div class="space-y-3">
+                <select id="appType" class="w-full px-3 py-2 border rounded">
+                    <option value="BORANG_H">Borang H - RM 300</option>
+                    <option value="BORANG_G">Borang G - RM 500</option>
+                    <option value="TADBIR_SUMPAH">Tadbir Sumpah - RM 100</option>
+                </select>
+                <button onclick="createApplication()" class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
+                    Create Application
+                </button>
+            </div>
+            <div id="appResult" class="mt-3 text-sm"></div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">4. Create Payment</h2>
+            <div class="space-y-3">
+                <input type="text" id="paymentAppId" placeholder="Application ID" class="w-full px-3 py-2 border rounded">
+                <select id="paymentMethod" class="w-full px-3 py-2 border rounded">
+                    <option value="ONLINE_BANKING">Online Banking</option>
+                    <option value="CREDIT_CARD">Credit Card</option>
+                    <option value="DEBIT_CARD">Debit Card</option>
+                </select>
+                <button onclick="createPayment()" class="w-full bg-orange-600 text-white py-2 rounded hover:bg-orange-700">
+                    Create Payment
+                </button>
+            </div>
+            <div id="paymentResult" class="mt-3 text-sm"></div>
+        </div>
+
+        <!-- Token Display -->
+        <div class="bg-gray-100 rounded p-4">
+            <h3 class="font-semibold mb-2">Current Token:</h3>
+            <code id="tokenDisplay" class="text-xs break-all">Not logged in</code>
+        </div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        function setResult(elementId, message, isError = false) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `mt-3 text-sm ${isError ? 'text-red-600' : 'text-green-600'}`;
+        }
+
+        async function register() {
+            const email = document.getElementById('regEmail').value;
+            const name = document.getElementById('regName').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, name, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    setResult('regResult', `✓ Registered successfully! User ID: ${data.data.user.id}`);
+                    authToken = data.data.token;
+                    document.getElementById('tokenDisplay').textContent = authToken;
+                } else {
+                    setResult('regResult', `✗ Error: ${data.message || 'Registration failed'}`, true);
+                }
+            } catch (error) {
+                setResult('regResult', `✗ Error: ${error.message}`, true);
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    setResult('loginResult', `✓ Logged in successfully! Welcome ${data.data.user.name}`);
+                    authToken = data.data.token;
+                    document.getElementById('tokenDisplay').textContent = authToken;
+                } else {
+                    setResult('loginResult', `✗ Error: ${data.message || 'Login failed'}`, true);
+                }
+            } catch (error) {
+                setResult('loginResult', `✗ Error: ${error.message}`, true);
+            }
+        }
+
+        async function createApplication() {
+            if (!authToken) {
+                setResult('appResult', '✗ Please login first', true);
+                return;
+            }
+
+            const type = document.getElementById('appType').value;
+
+            try {
+                const response = await fetch('/api/applications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ type })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    setResult('appResult', `✓ Application created! Number: ${data.data.application.applicationNumber}, ID: ${data.data.application.id}`);
+                    document.getElementById('paymentAppId').value = data.data.application.id;
+                } else {
+                    setResult('appResult', `✗ Error: ${data.message || 'Failed to create application'}`, true);
+                }
+            } catch (error) {
+                setResult('appResult', `✗ Error: ${error.message}`, true);
+            }
+        }
+
+        async function createPayment() {
+            if (!authToken) {
+                setResult('paymentResult', '✗ Please login first', true);
+                return;
+            }
+
+            const applicationId = document.getElementById('paymentAppId').value;
+            const method = document.getElementById('paymentMethod').value;
+
+            if (!applicationId) {
+                setResult('paymentResult', '✗ Please enter Application ID', true);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/payments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ applicationId, method })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    setResult('paymentResult', `✓ Payment created! Number: ${data.data.payment.paymentNumber}, Amount: RM ${data.data.payment.amount}`);
+                } else {
+                    setResult('paymentResult', `✗ Error: ${data.message || 'Failed to create payment'}`, true);
+                }
+            } catch (error) {
+                setResult('paymentResult', `✗ Error: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

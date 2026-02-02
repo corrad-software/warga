@@ -1,0 +1,405 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  PEMOHON              // Applicant
+  PEGAWAI_KONSUL       // Consular Officer
+  PEGAWAI_PENDAFTARAN  // Registration Officer
+  ADMIN
+}
+
+enum NationalityStatus {
+  TIDAK_WARGANEGARA    // Non-citizen
+  PEMOHON              // Applicant
+  WARGANEGARA          // Citizen
+  DITOLAK              // Rejected
+}
+
+enum BiometricStatus {
+  TIDAK_LENGKAP        // Incomplete
+  LENGKAP              // Complete
+  DISAHKAN             // Verified
+}
+
+enum ApplicationType {
+  BORANG_H             // Birth Abroad (Kelahiran Luar Negara)
+  BORANG_G             // Article 15(2) Fastlane
+  TADBIR_SUMPAH        // Oath Administration
+}
+
+enum ApplicationStatus {
+  DRAFT                // Draft
+  SUBMITTED            // Submitted
+  PENDING_REVIEW       // Pending Review
+  DOCUMENTS_VERIFIED   // Documents Verified
+  PENDING_BIOMETRIC    // Pending Biometric
+  BIOMETRIC_CAPTURED   // Biometric Captured
+  PENDING_PAYMENT      // Pending Payment
+  PAYMENT_COMPLETED    // Payment Completed
+  UNDER_REVIEW         // Under Review by Officer
+  APPROVED             // Approved
+  REJECTED             // Rejected
+  PENDING_OATH         // Pending Oath (for future oath)
+  OATH_COMPLETED       // Oath Completed
+  CERTIFICATE_ISSUED   // Certificate Issued
+  COMPLETED            // Completed
+}
+
+enum DocumentType {
+  BIRTH_CERTIFICATE
+  PASSPORT
+  IC_PARENTS
+  MARRIAGE_CERTIFICATE
+  SUPPORTING_LETTER
+  OTHER
+}
+
+enum DocumentVerificationStatus {
+  PENDING
+  OCR_PROCESSING
+  OCR_COMPLETED
+  VERIFIED
+  REJECTED
+  REQUIRES_MANUAL_CHECK
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  ONLINE_BANKING
+  CREDIT_CARD
+  DEBIT_CARD
+  CASH
+  OTHER
+}
+
+enum CertificateType {
+  CITIZENSHIP
+  OATH_ACKNOWLEDGMENT
+  OTHER
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  SYSTEM
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  APPROVE
+  REJECT
+  SUBMIT
+  LOGIN
+  LOGOUT
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model User {
+  id                 String            @id @default(uuid())
+  email              String            @unique
+  password           String            // Hashed password
+  name               String
+  icNumber           String?           @unique // Identity Card Number
+  passportNumber     String?
+  phoneNumber        String?
+  address            String?           
+  dateOfBirth        DateTime?
+  placeOfBirth       String?
+
+  role               UserRole          @default(PEMOHON)
+  nationalityStatus  NationalityStatus @default(TIDAK_WARGANEGARA)
+  biometricStatus    BiometricStatus   @default(TIDAK_LENGKAP)
+
+  isActive           Boolean           @default(true)
+  emailVerified      Boolean           @default(false)
+  emailVerifiedAt    DateTime?
+
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  // Relations
+  applications       Application[]
+  biometrics         Biometric[]
+  certificates       Certificate[]
+  auditLogs          AuditLog[]
+  notifications      Notification[]
+  paymentsAsApplicant Payment[]        @relation("ApplicantPayments")
+
+  @@index([email])
+  @@index([icNumber])
+  @@index([role])
+  @@map("users")
+}
+
+model Application {
+  id                 String              @id @default(uuid())
+  applicationNumber  String              @unique // Auto-generated reference number
+
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type               ApplicationType
+  status             ApplicationStatus   @default(DRAFT)
+
+  // Form data (JSON for flexibility)
+  formData           Json?
+
+  // Dates
+  submissionDate     DateTime?
+  reviewStartDate    DateTime?
+  decisionDate       DateTime?
+  completionDate     DateTime?
+
+  // Officer assignments
+  consulatOfficerId  String?
+  registrationOfficerId String?
+
+  // Decision
+  decision           String?             
+  decisionReason     String?             
+
+  // Flags
+  requiresOath       Boolean             @default(false)
+  oathScheduledDate  DateTime?
+  oathCompletedDate  DateTime?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  // Relations
+  documents          Document[]
+  payments           Payment[]
+  certificates       Certificate[]
+  workflowHistory    WorkflowHistory[]
+
+  @@index([userId])
+  @@index([applicationNumber])
+  @@index([status])
+  @@index([type])
+  @@index([submissionDate])
+  @@map("applications")
+}
+
+model Document {
+  id                 String                      @id @default(uuid())
+
+  applicationId      String
+  application        Application                 @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  documentType       DocumentType
+  fileName           String
+  filePath           String                      // Storage path
+  fileSize           Int                         // In bytes
+  mimeType           String
+
+  // OCR Data
+  ocrResult          Json?                       // OCR extracted data
+  ocrProcessedAt     DateTime?
+
+  verificationStatus DocumentVerificationStatus  @default(PENDING)
+  verifiedBy         String?                     // User ID of verifier
+  verifiedAt         DateTime?
+  verificationNotes  String?                     
+
+  uploadedAt         DateTime                    @default(now())
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+
+  @@index([applicationId])
+  @@index([verificationStatus])
+  @@map("documents")
+}
+
+model Biometric {
+  id                 String              @id @default(uuid())
+
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Biometric data (hashed/encrypted)
+  fingerprintHash    String?             
+  faceImagePath      String?
+
+  // Metadata
+  captureDate        DateTime            @default(now())
+  captureLocation    String?             // Consulate location
+  capturedBy         String?             // Officer ID
+  deviceId           String?
+  quality            Int?                // Quality score 0-100
+
+  isVerified         Boolean             @default(false)
+  verifiedAt         DateTime?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([userId])
+  @@map("biometrics")
+}
+
+model Payment {
+  id                 String              @id @default(uuid())
+  paymentNumber      String              @unique // Auto-generated
+
+  applicationId      String
+  application        Application         @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  userId             String
+  user               User                @relation("ApplicantPayments", fields: [userId], references: [id])
+
+  amount             Decimal             
+  currency           String              @default("MYR")
+
+  status             PaymentStatus       @default(PENDING)
+  method             PaymentMethod?
+
+  // Payment gateway data
+  transactionId      String?             @unique
+  gatewayResponse    Json?
+
+  paidAt             DateTime?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([applicationId])
+  @@index([userId])
+  @@index([status])
+  @@index([transactionId])
+  @@map("payments")
+}
+
+model Certificate {
+  id                 String              @id @default(uuid())
+  certificateNumber  String              @unique // Official certificate number
+
+  applicationId      String
+  application        Application         @relation(fields: [applicationId], references: [id])
+
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+
+  certificateType    CertificateType
+
+  // Certificate data
+  issueDate          DateTime            @default(now())
+  expiryDate         DateTime?
+
+  qrCode             String?              // QR code data for verification
+  filePath           String?             // PDF storage path
+
+  issuedBy           String?             // Officer ID
+  isActive           Boolean             @default(true)
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([certificateNumber])
+  @@index([applicationId])
+  @@index([userId])
+  @@map("certificates")
+}
+
+model WorkflowHistory {
+  id                 String              @id @default(uuid())
+
+  applicationId      String
+  application        Application         @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  fromStatus         ApplicationStatus?
+  toStatus           ApplicationStatus
+
+  actionBy           String?             // User ID
+  actionByRole       UserRole?
+
+  notes              String?             
+  metadata           Json?
+
+  createdAt          DateTime            @default(now())
+
+  @@index([applicationId])
+  @@index([createdAt])
+  @@map("workflow_history")
+}
+
+model Notification {
+  id                 String              @id @default(uuid())
+
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type               NotificationType
+  status             NotificationStatus  @default(PENDING)
+
+  subject            String
+  message            String              
+
+  // Metadata
+  sentAt             DateTime?
+  readAt             DateTime?
+  failureReason      String?             
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id                 String              @id @default(uuid())
+
+  userId             String?
+  user               User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action             AuditAction
+  entityType         String              // e.g., "Application", "User", "Document"
+  entityId           String?
+
+  changes            Json?               // Before/after data
+  metadata           Json?               // Additional context
+
+  ipAddress          String?
+  userAgent          String?             
+
+  createdAt          DateTime            @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
