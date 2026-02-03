@@ -72,9 +72,12 @@ onMounted(() => {
     <header class="bg-white shadow">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex justify-between items-center">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">Applicant Dashboard</h1>
-            <p class="text-sm text-gray-600">Welcome, {{ user?.name }}</p>
+          <div class="flex items-center space-x-4">
+            <img src="/assets/images/jpn_logo.png" alt="JPN Logo" class="h-12 w-auto hidden sm:block" />
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">Applicant Dashboard</h1>
+              <p class="text-sm text-gray-600">Welcome, {{ user?.name }}</p>
+            </div>
           </div>
           <div class="flex items-center space-x-4">
             <NuxtLink

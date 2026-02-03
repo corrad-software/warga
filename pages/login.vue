@@ -62,14 +62,13 @@ onMounted(async () => {
         <!-- Logo/Brand -->
         <div class="mb-12">
           <div class="flex items-center space-x-3 mb-4">
-            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+            <img src="/assets/images/jpn_logo.png" alt="JPN Logo" class="h-16 w-auto" />
+            <div>
+              <h1 class="text-3xl font-bold">SPK</h1>
+              <p class="text-blue-100 text-sm">Jabatan Pendaftaran Negara</p>
             </div>
-            <h1 class="text-3xl font-bold">Warga</h1>
           </div>
-          <p class="text-blue-100 text-lg">Citizenship Application Management System</p>
+          <p class="text-blue-100 text-lg">Sistem Pengurusan Kewarganegaraan</p>
         </div>
 
         <!-- Features -->
@@ -131,13 +130,10 @@ onMounted(async () => {
       <div class="max-w-md w-full space-y-8">
         <!-- Mobile Logo -->
         <div class="lg:hidden text-center mb-8">
-          <div class="inline-flex items-center space-x-3 mb-4">
-            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h1 class="text-2xl font-bold text-gray-900">Warga</h1>
+          <div class="inline-flex flex-col items-center mb-4">
+            <img src="/assets/images/jpn_logo.png" alt="JPN Logo" class="h-16 w-auto mb-2" />
+            <h1 class="text-2xl font-bold text-gray-900">SPK</h1>
+            <p class="text-sm text-gray-600">Jabatan Pendaftaran Negara</p>
           </div>
         </div>
 
@@ -234,7 +230,7 @@ onMounted(async () => {
               <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-gray-50 text-gray-500">New to Warga?</span>
+              <span class="px-2 bg-gray-50 text-gray-500">New to SPK?</span>
             </div>
           </div>
 
