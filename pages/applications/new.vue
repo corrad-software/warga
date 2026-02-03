@@ -154,28 +154,54 @@ const handleSaveDraft = async () => {
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <button
-              @click="router.push('/dashboard')"
-              class="mr-4 text-gray-600 hover:text-gray-900"
-            >
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Left: Logo and System Name -->
+          <div class="flex items-center space-x-3">
+            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
             <div>
-              <h1 class="text-2xl font-bold text-gray-900">New Citizenship Application</h1>
-              <p class="mt-1 text-sm text-gray-600">Submit a new citizenship application</p>
+              <h1 class="text-lg font-bold text-gray-900">SPK</h1>
+              <p class="text-xs text-gray-600">Sistem Pengurusan Kewarganegaraan</p>
             </div>
           </div>
+
+          <!-- Right: Menu -->
+          <nav class="flex items-center space-x-6">
+            <NuxtLink
+              to="/dashboard"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
+            >
+              My Applications
+            </NuxtLink>
+            <NuxtLink
+              to="/payments"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
+            >
+              My Payments
+            </NuxtLink>
+          </nav>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Back Button and Page Title -->
+      <div class="mb-8 flex items-center">
+        <button
+          @click="router.push('/dashboard')"
+          class="mr-4 text-gray-600 hover:text-gray-900"
+        >
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900">New Citizenship Application</h2>
+          <p class="text-gray-600 mt-2">Submit a new citizenship application</p>
+        </div>
+      </div>
+
       <!-- Step Indicator -->
       <nav aria-label="Progress" class="mb-8">
         <ol class="flex items-center justify-center">

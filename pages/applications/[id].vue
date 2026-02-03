@@ -161,42 +161,70 @@ onMounted(async () => {
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <button
-              @click="router.back()"
-              class="mr-4 text-gray-600 hover:text-gray-900"
-            >
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Left: Logo and System Name -->
+          <div class="flex items-center space-x-3">
+            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
             <div>
-              <h1 class="text-2xl font-bold text-gray-900">
-                {{ application?.applicationNumber || 'Application Details' }}
-              </h1>
-              <p v-if="application" class="text-sm text-gray-600">
-                Type: {{ application.type.replace(/_/g, ' ') }}
-              </p>
+              <h1 class="text-lg font-bold text-gray-900">SPK</h1>
+              <p class="text-xs text-gray-600">Sistem Pengurusan Kewarganegaraan</p>
             </div>
           </div>
-          <div v-if="application">
-            <span
-              :class="[
-                'px-3 py-1 text-sm font-semibold rounded-full',
-                statusColors[application.status] || 'bg-gray-100 text-gray-800'
-              ]"
+
+          <!-- Right: Menu -->
+          <nav class="flex items-center space-x-6">
+            <NuxtLink
+              to="/dashboard"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
             >
-              {{ formatStatus(application.status) }}
-            </span>
-          </div>
+              My Applications
+            </NuxtLink>
+            <NuxtLink
+              to="/payments"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
+            >
+              My Payments
+            </NuxtLink>
+          </nav>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Back Button and Page Title -->
+      <div class="mb-8 flex items-center justify-between">
+        <div class="flex items-center">
+          <button
+            @click="router.back()"
+            class="mr-4 text-gray-600 hover:text-gray-900"
+          >
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900">
+              {{ application?.applicationNumber || 'Application Details' }}
+            </h2>
+            <p v-if="application" class="text-gray-600 mt-2">
+              Type: {{ application.type.replace(/_/g, ' ') }}
+            </p>
+          </div>
+        </div>
+        <div v-if="application">
+          <span
+            :class="[
+              'px-3 py-1 text-sm font-semibold rounded-full',
+              statusColors[application.status] || 'bg-gray-100 text-gray-800'
+            ]"
+          >
+            {{ formatStatus(application.status) }}
+          </span>
+        </div>
+      </div>
+
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

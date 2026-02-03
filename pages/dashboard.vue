@@ -70,38 +70,50 @@ onMounted(() => {
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex justify-between items-center">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">Applicant Dashboard</h1>
-            <p class="text-sm text-gray-600">Welcome, {{ user?.name }}</p>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Left: Logo and System Name -->
+          <div class="flex items-center space-x-3">
+            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
+            <div>
+              <h1 class="text-lg font-bold text-gray-900">SPK</h1>
+              <p class="text-xs text-gray-600">Sistem Pengurusan Kewarganegaraan</p>
+            </div>
           </div>
-          <div class="flex items-center space-x-4">
+
+          <!-- Right: Menu -->
+          <nav class="flex items-center space-x-6">
             <NuxtLink
               to="/dashboard"
-              class="text-sm font-medium text-gray-700 hover:text-blue-600 hidden sm:block"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
             >
               My Applications
             </NuxtLink>
             <NuxtLink
               to="/payments"
-              class="text-sm font-medium text-gray-700 hover:text-blue-600 hidden sm:block"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
             >
               My Payments
             </NuxtLink>
             <button
               @click="logout"
-              class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+              class="text-sm font-medium text-gray-700 hover:text-gray-900"
             >
               Logout
             </button>
-          </div>
+          </nav>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Page Title -->
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Welcome, {{ user?.name }}</h2>
+        <p class="text-gray-600 mt-2">Manage your citizenship applications</p>
+      </div>
+
       <!-- Actions -->
       <div class="mb-6 flex flex-wrap gap-3">
         <button
