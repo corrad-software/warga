@@ -1,7 +1,9 @@
+# Build stage
 FROM node:20-bullseye-slim AS builder
+
 WORKDIR /app
 
-# Install build dependencies needed by native modules (e.g. canvas, tesseract)
+# Native deps for canvas, tesseract.js, etc.
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     python3 \
@@ -13,28 +15,36 @@ RUN apt-get update \
     libgif-dev \
   && rm -rf /var/lib/apt/lists/*
 
-ENV NODE_ENV=development
+COPY package.json package-lock.json* ./
 
-COPY package.json package-lock.json ./
-# Prefer `npm ci` for reproducible installs, but fall back to `npm install`
-# if the lockfile is out of sync (common in CI/build-agent environments).
-RUN npm ci || npm install --prefer-offline --no-audit --no-fund
+# Prefer npm install so lock file can be out of sync (e.g. Coolify)
+RUN npm install --prefer-offline --no-audit --no-fund
 
 COPY . .
 
 RUN npm run build
 
-# Remove dev dependencies to keep runtime image small
-RUN npm prune --production
-
+# Production stage
 FROM node:20-bullseye-slim AS runner
+
 WORKDIR /app
+
 ENV NODE_ENV=production
 
-# Copy built output and production dependencies
-COPY --from=builder /app/.output .output
+# Runtime deps for Prisma / optional native modules
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    openssl \
+    ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/prisma ./prisma
+
+# Generate Prisma client for production
+RUN npx prisma generate
 
 EXPOSE 3000
 
