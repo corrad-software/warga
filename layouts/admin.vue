@@ -98,7 +98,7 @@ watch(() => router.currentRoute.value.path, () => {
           <!-- Logo -->
           <div class="flex items-center flex-shrink-0 px-3 py-4 border-b border-gray-200">
             <div class="flex items-center">
-              <img src="/assets/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
+              <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
               <div class="ml-2">
                 <h1 class="text-sm font-semibold text-gray-900">SPK</h1>
                 <p class="text-xs text-gray-500">Admin Panel</p>

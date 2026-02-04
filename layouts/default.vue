@@ -3,7 +3,7 @@
     <nav class="border-b">
       <div class="container mx-auto px-4 py-4">
         <div class="flex items-center space-x-3">
-          <img src="/assets/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
+          <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
           <div>
             <h1 class="text-2xl font-bold">SPK</h1>
             <p class="text-xs text-gray-600">Sistem Pengurusan Kewarganegaraan</p>

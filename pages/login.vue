@@ -62,7 +62,7 @@ onMounted(async () => {
         <!-- Logo/Brand -->
         <div class="mb-12">
           <div class="flex items-center space-x-3 mb-4">
-            <img src="/assets/images/jpn_logo.png" alt="JPN Logo" class="h-16 w-auto" />
+            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-16 w-auto" />
             <div>
               <h1 class="text-3xl font-bold">SPK</h1>
               <p class="text-blue-100 text-sm">Jabatan Pendaftaran Negara</p>
@@ -131,7 +131,7 @@ onMounted(async () => {
         <!-- Mobile Logo -->
         <div class="lg:hidden text-center mb-8">
           <div class="inline-flex flex-col items-center mb-4">
-            <img src="/assets/images/jpn_logo.png" alt="JPN Logo" class="h-16 w-auto mb-2" />
+            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-16 w-auto mb-2" />
             <h1 class="text-2xl font-bold text-gray-900">SPK</h1>
             <p class="text-sm text-gray-600">Jabatan Pendaftaran Negara</p>
           </div>
