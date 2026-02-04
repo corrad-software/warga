@@ -1,4 +1,4 @@
-FROM node:18-bullseye-slim AS builder
+FROM node:20-bullseye-slim AS builder
 WORKDIR /app
 
 # Install build dependencies needed by native modules (e.g. canvas, tesseract)
@@ -27,7 +27,7 @@ RUN npm run build
 # Remove dev dependencies to keep runtime image small
 RUN npm prune --production
 
-FROM node:18-bullseye-slim AS runner
+FROM node:20-bullseye-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
