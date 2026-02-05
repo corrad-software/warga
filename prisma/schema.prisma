@@ -280,6 +280,7 @@ model User {
 // ============================================
 model Applicant {
   id                           Int               @id @default(autoincrement()) @map("applicant_id")
+  applicationType              String?           @map("application_type")
   fullName                     String            @map("full_name")
   fullNameOther                String?           @map("full_name_other")
   gender                       String?           // M, F

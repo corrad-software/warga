@@ -83,7 +83,7 @@ const fetchStats = async () => {
 }
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('en-MY', {
+  return new Date(date).toLocaleDateString('ms-MY', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
@@ -91,7 +91,27 @@ const formatDate = (date: string) => {
 }
 
 const formatStatus = (status: string) => {
-  return status.replace(/_/g, ' ')
+  const statusMap: Record<string, string> = {
+    DRAFT: 'Draf',
+    SUBMITTED: 'Dihantar',
+    PENDING_REVIEW: 'Menunggu Semakan',
+    DOCUMENTS_VERIFIED: 'Dokumen Disahkan',
+    PENDING_BIOMETRIC: 'Menunggu Biometrik',
+    BIOMETRIC_CAPTURED: 'Biometrik Diambil',
+    PENDING_PAYMENT: 'Menunggu Pembayaran',
+    PAYMENT_COMPLETED: 'Pembayaran Selesai',
+    UNDER_REVIEW: 'Dalam Semakan',
+    APPROVED: 'Diluluskan',
+    REJECTED: 'Ditolak',
+    PENDING_OATH: 'Menunggu Sumpah',
+    OATH_COMPLETED: 'Sumpah Selesai',
+    CERTIFICATE_ISSUED: 'Sijil Dikeluarkan',
+    COMPLETED: 'Selesai',
+    BORANG_H: 'Kelahiran Luar Negara',
+    BORANG_G: 'Perkara 15(2)',
+    TADBIR_SUMPAH: 'Pentadbiran Sumpah'
+  }
+  return statusMap[status] || status.replace(/_/g, ' ')
 }
 
 onMounted(() => {
@@ -101,23 +121,23 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- Loading State -->
+    <!-- Keadaan Memuatkan -->
     <div v-if="loading" class="text-center py-12">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      <p class="mt-2 text-gray-600">Loading dashboard...</p>
+      <p class="mt-2 text-gray-600">Memuatkan papan pemuka...</p>
     </div>
 
-    <!-- Dashboard Content -->
+    <!-- Kandungan Papan Pemuka -->
     <div v-else>
-      <!-- Welcome Section -->
+      <!-- Bahagian Utama -->
       <div class="mb-8">
-        <h3 class="text-2xl font-bold text-gray-900">Dashboard Overview</h3>
-        <p class="mt-1 text-sm text-gray-600">Monitor and manage the citizenship application system</p>
+        <h3 class="text-2xl font-bold text-gray-900">Gambaran Keseluruhan Papan Pemuka</h3>
+        <p class="mt-1 text-sm text-gray-600">Pantau dan urus sistem permohonan kewarganegaraan</p>
       </div>
 
       <!-- Stats Grid -->
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-        <!-- Total Users -->
+        <!-- Jumlah Pengguna -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -130,7 +150,7 @@ onMounted(() => {
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Jumlah Pengguna</dt>
                   <dd class="text-2xl font-semibold text-gray-900">{{ stats.totalUsers }}</dd>
                 </dl>
               </div>
@@ -138,12 +158,12 @@ onMounted(() => {
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <NuxtLink to="/admin/users" class="text-sm font-medium text-blue-600 hover:text-blue-500">
-              View all →
+              Lihat semua →
             </NuxtLink>
           </div>
         </div>
 
-        <!-- Total Applications -->
+        <!-- Jumlah Permohonan -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -156,7 +176,7 @@ onMounted(() => {
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Total Applications</dt>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Jumlah Permohonan</dt>
                   <dd class="text-2xl font-semibold text-gray-900">{{ stats.totalApplications }}</dd>
                 </dl>
               </div>
@@ -164,12 +184,12 @@ onMounted(() => {
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <NuxtLink to="/admin/applications" class="text-sm font-medium text-green-600 hover:text-green-500">
-              View all →
+              Lihat semua →
             </NuxtLink>
           </div>
         </div>
 
-        <!-- Pending Applications -->
+        <!-- Menunggu Semakan -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -182,18 +202,18 @@ onMounted(() => {
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Pending Review</dt>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Menunggu Semakan</dt>
                   <dd class="text-2xl font-semibold text-gray-900">{{ stats.pendingApplications }}</dd>
                 </dl>
               </div>
             </div>
           </div>
           <div class="bg-gray-50 px-5 py-3">
-            <span class="text-sm text-gray-500">Requires attention</span>
+            <span class="text-sm text-gray-500">Memerlukan perhatian</span>
           </div>
         </div>
 
-        <!-- Pending Payments -->
+        <!-- Menunggu Pembayaran -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -206,7 +226,7 @@ onMounted(() => {
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Pending Payments</dt>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Menunggu Pembayaran</dt>
                   <dd class="text-2xl font-semibold text-gray-900">{{ stats.pendingPayments }}</dd>
                 </dl>
               </div>
@@ -214,46 +234,46 @@ onMounted(() => {
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <NuxtLink to="/admin/payments" class="text-sm font-medium text-purple-600 hover:text-purple-500">
-              View all →
+              Lihat semua →
             </NuxtLink>
           </div>
         </div>
       </div>
 
-      <!-- Secondary Stats -->
+      <!-- Statistik Sekunder -->
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="px-4 py-5 sm:p-6">
-            <dt class="text-sm font-medium text-gray-500 truncate">Approved Applications</dt>
+            <dt class="text-sm font-medium text-gray-500 truncate">Permohonan Diluluskan</dt>
             <dd class="mt-1 text-3xl font-semibold text-green-600">{{ stats.approvedApplications }}</dd>
           </div>
         </div>
 
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="px-4 py-5 sm:p-6">
-            <dt class="text-sm font-medium text-gray-500 truncate">Rejected Applications</dt>
+            <dt class="text-sm font-medium text-gray-500 truncate">Permohonan Ditolak</dt>
             <dd class="mt-1 text-3xl font-semibold text-red-600">{{ stats.rejectedApplications }}</dd>
           </div>
         </div>
 
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="px-4 py-5 sm:p-6">
-            <dt class="text-sm font-medium text-gray-500 truncate">Pending Documents</dt>
+            <dt class="text-sm font-medium text-gray-500 truncate">Dokumen Menunggu</dt>
             <dd class="mt-1 text-3xl font-semibold text-orange-600">{{ stats.pendingDocuments }}</dd>
           </div>
         </div>
       </div>
 
-      <!-- Charts Section -->
+      <!-- Bahagian Carta -->
       <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 mb-8">
-        <!-- Bar Chart - Application Status Distribution -->
+        <!-- Carta Bar - Taburan Status Permohonan -->
         <div class="bg-white shadow rounded-lg p-6">
-          <h4 class="text-lg font-medium text-gray-900 mb-4">Application Status Overview</h4>
+          <h4 class="text-lg font-medium text-gray-900 mb-4">Gambaran Status Permohonan</h4>
           <div class="space-y-4">
-            <!-- Bar 1 - Submitted -->
+            <!-- Bar 1 - Dihantar -->
             <div>
               <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-gray-700">Submitted</span>
+                <span class="text-sm font-medium text-gray-700">Dihantar</span>
                 <span class="text-sm font-medium text-gray-700">{{ stats.pendingApplications }}</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-3">
@@ -264,10 +284,10 @@ onMounted(() => {
               </div>
             </div>
 
-            <!-- Bar 2 - Under Review -->
+            <!-- Bar 2 - Dalam Semakan -->
             <div>
               <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-gray-700">Under Review</span>
+                <span class="text-sm font-medium text-gray-700">Dalam Semakan</span>
                 <span class="text-sm font-medium text-gray-700">12</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-3">
@@ -275,10 +295,10 @@ onMounted(() => {
               </div>
             </div>
 
-            <!-- Bar 3 - Approved -->
+            <!-- Bar 3 - Diluluskan -->
             <div>
               <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-gray-700">Approved</span>
+                <span class="text-sm font-medium text-gray-700">Diluluskan</span>
                 <span class="text-sm font-medium text-gray-700">{{ stats.approvedApplications }}</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-3">
@@ -289,10 +309,10 @@ onMounted(() => {
               </div>
             </div>
 
-            <!-- Bar 4 - Rejected -->
+            <!-- Bar 4 - Ditolak -->
             <div>
               <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-gray-700">Rejected</span>
+                <span class="text-sm font-medium text-gray-700">Ditolak</span>
                 <span class="text-sm font-medium text-gray-700">{{ stats.rejectedApplications }}</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-3">
@@ -303,10 +323,10 @@ onMounted(() => {
               </div>
             </div>
 
-            <!-- Bar 5 - Certificate Issued -->
+            <!-- Bar 5 - Sijil Dikeluarkan -->
             <div>
               <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-gray-700">Certificate Issued</span>
+                <span class="text-sm font-medium text-gray-700">Sijil Dikeluarkan</span>
                 <span class="text-sm font-medium text-gray-700">18</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-3">
@@ -316,9 +336,9 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Line Chart - Monthly Trend -->
+        <!-- Carta Garisan - Trend Bulanan -->
         <div class="bg-white shadow rounded-lg p-6">
-          <h4 class="text-lg font-medium text-gray-900 mb-4">Application Trend (Last 6 Months)</h4>
+          <h4 class="text-lg font-medium text-gray-900 mb-4">Trend Permohonan (6 Bulan Terakhir)</h4>
           <div class="relative">
             <!-- Y-axis labels -->
             <div class="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
@@ -367,13 +387,13 @@ onMounted(() => {
                 />
               </svg>
 
-              <!-- X-axis labels -->
+              <!-- Label paksi-X -->
               <div class="flex justify-between text-xs text-gray-500 mt-2">
-                <span>Aug</span>
+                <span>Ogo</span>
                 <span>Sep</span>
-                <span>Oct</span>
+                <span>Okt</span>
                 <span>Nov</span>
-                <span>Dec</span>
+                <span>Dis</span>
                 <span>Jan</span>
               </div>
             </div>
@@ -381,17 +401,17 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Donut Chart and Activity -->
+      <!-- Carta Donat dan Aktiviti -->
       <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 mb-8">
-        <!-- Donut Chart - Payment Status -->
+        <!-- Carta Donat - Status Pembayaran -->
         <div class="bg-white shadow rounded-lg p-6">
-          <h4 class="text-lg font-medium text-gray-900 mb-4">Payment Status</h4>
+          <h4 class="text-lg font-medium text-gray-900 mb-4">Status Pembayaran</h4>
           <div class="flex items-center justify-center">
             <svg viewBox="0 0 200 200" class="w-40 h-40">
-              <!-- Background circle -->
+              <!-- Bulatan latar belakang -->
               <circle cx="100" cy="100" r="80" fill="#f3f4f6"/>
 
-              <!-- Completed: 65% (green) -->
+              <!-- Selesai: 65% (hijau) -->
               <circle
                 cx="100"
                 cy="100"
@@ -403,7 +423,7 @@ onMounted(() => {
                 transform="rotate(-90 100 100)"
               />
 
-              <!-- Pending: 25% (yellow) -->
+              <!-- Menunggu: 25% (kuning) -->
               <circle
                 cx="100"
                 cy="100"
@@ -415,7 +435,7 @@ onMounted(() => {
                 transform="rotate(144 100 100)"
               />
 
-              <!-- Failed: 10% (red) -->
+              <!-- Gagal: 10% (merah) -->
               <circle
                 cx="100"
                 cy="100"
@@ -427,51 +447,51 @@ onMounted(() => {
                 transform="rotate(234 100 100)"
               />
 
-              <!-- Center white circle -->
+              <!-- Bulatan putih tengah -->
               <circle cx="100" cy="100" r="50" fill="white"/>
 
-              <!-- Center text -->
+              <!-- Teks tengah -->
               <text x="100" y="100" text-anchor="middle" dy=".3em" class="text-2xl font-bold fill-gray-900">
                 {{ stats.totalPayments }}
               </text>
               <text x="100" y="120" text-anchor="middle" class="text-xs fill-gray-500">
-                Total
+                Jumlah
               </text>
             </svg>
           </div>
 
-          <!-- Legend -->
+          <!-- Legenda -->
           <div class="mt-4 space-y-2">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <div class="w-3 h-3 bg-green-600 rounded-full mr-2"></div>
-                <span class="text-sm text-gray-700">Completed</span>
+                <span class="text-sm text-gray-700">Selesai</span>
               </div>
               <span class="text-sm font-medium text-gray-900">65%</span>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <div class="w-3 h-3 bg-yellow-600 rounded-full mr-2"></div>
-                <span class="text-sm text-gray-700">Pending</span>
+                <span class="text-sm text-gray-700">Menunggu</span>
               </div>
               <span class="text-sm font-medium text-gray-900">25%</span>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <div class="w-3 h-3 bg-red-600 rounded-full mr-2"></div>
-                <span class="text-sm text-gray-700">Failed</span>
+                <span class="text-sm text-gray-700">Gagal</span>
               </div>
               <span class="text-sm font-medium text-gray-900">10%</span>
             </div>
           </div>
         </div>
 
-        <!-- Recent Activity Timeline -->
+        <!-- Garis Masa Aktiviti Terkini -->
         <div class="bg-white shadow rounded-lg p-6 lg:col-span-2">
-          <h4 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h4>
+          <h4 class="text-lg font-medium text-gray-900 mb-4">Aktiviti Terkini</h4>
           <div class="flow-root">
             <ul class="-mb-8">
-              <!-- Activity 1 -->
+              <!-- Aktiviti 1 -->
               <li>
                 <div class="relative pb-8">
                   <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
@@ -485,18 +505,18 @@ onMounted(() => {
                     </div>
                     <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                       <div>
-                        <p class="text-sm text-gray-900">Application <span class="font-medium">#APP-2024-045</span> approved</p>
-                        <p class="mt-0.5 text-xs text-gray-500">Ahmad bin Abdullah - Citizenship application</p>
+                        <p class="text-sm text-gray-900">Permohonan <span class="font-medium">#APP-2024-045</span> diluluskan</p>
+                        <p class="mt-0.5 text-xs text-gray-500">Ahmad bin Abdullah - Permohonan kewarganegaraan</p>
                       </div>
                       <div class="text-right text-xs whitespace-nowrap text-gray-500">
-                        1h ago
+                        1 jam lalu
                       </div>
                     </div>
                   </div>
                 </div>
               </li>
 
-              <!-- Activity 2 -->
+              <!-- Aktiviti 2 -->
               <li>
                 <div class="relative pb-8">
                   <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
@@ -511,18 +531,18 @@ onMounted(() => {
                     </div>
                     <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                       <div>
-                        <p class="text-sm text-gray-900">Payment received for <span class="font-medium">#APP-2024-042</span></p>
-                        <p class="mt-0.5 text-xs text-gray-500">Amount: RM 1,250.00</p>
+                        <p class="text-sm text-gray-900">Pembayaran diterima untuk <span class="font-medium">#APP-2024-042</span></p>
+                        <p class="mt-0.5 text-xs text-gray-500">Jumlah: RM 1,250.00</p>
                       </div>
                       <div class="text-right text-xs whitespace-nowrap text-gray-500">
-                        2h ago
+                        2 jam lalu
                       </div>
                     </div>
                   </div>
                 </div>
               </li>
 
-              <!-- Activity 3 -->
+              <!-- Aktiviti 3 -->
               <li>
                 <div class="relative pb-8">
                   <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
@@ -537,18 +557,18 @@ onMounted(() => {
                     </div>
                     <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                       <div>
-                        <p class="text-sm text-gray-900">Documents verified for <span class="font-medium">#APP-2024-038</span></p>
-                        <p class="mt-0.5 text-xs text-gray-500">All required documents approved</p>
+                        <p class="text-sm text-gray-900">Dokumen disahkan untuk <span class="font-medium">#APP-2024-038</span></p>
+                        <p class="mt-0.5 text-xs text-gray-500">Semua dokumen yang diperlukan diluluskan</p>
                       </div>
                       <div class="text-right text-xs whitespace-nowrap text-gray-500">
-                        4h ago
+                        4 jam lalu
                       </div>
                     </div>
                   </div>
                 </div>
               </li>
 
-              <!-- Activity 4 -->
+              <!-- Aktiviti 4 -->
               <li>
                 <div class="relative">
                   <div class="relative flex space-x-3">
@@ -561,11 +581,11 @@ onMounted(() => {
                     </div>
                     <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                       <div>
-                        <p class="text-sm text-gray-900">New application submitted <span class="font-medium">#APP-2024-046</span></p>
-                        <p class="mt-0.5 text-xs text-gray-500">Requires initial review</p>
+                        <p class="text-sm text-gray-900">Permohonan baru dihantar <span class="font-medium">#APP-2024-046</span></p>
+                        <p class="mt-0.5 text-xs text-gray-500">Memerlukan semakan awal</p>
                       </div>
                       <div class="text-right text-xs whitespace-nowrap text-gray-500">
-                        5h ago
+                        5 jam lalu
                       </div>
                     </div>
                   </div>
@@ -576,20 +596,20 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Recent Applications -->
+      <!-- Permohonan Terkini -->
       <div class="bg-white shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Applications</h3>
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Permohonan Terkini</h3>
 
           <div v-if="recentApplications.length > 0" class="overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application #</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Permohonan</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pemohon</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarikh</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -610,7 +630,7 @@ onMounted(() => {
             </table>
           </div>
           <div v-else class="text-center py-6 text-gray-500">
-            No applications yet
+            Tiada permohonan lagi
           </div>
         </div>
       </div>
