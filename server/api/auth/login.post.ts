@@ -67,18 +67,20 @@ export default defineEventHandler(async (event) => {
     const { password: _, ...userWithoutPassword } = user
     
     // Log the login in audit log
-    await prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'LOGIN',
-        entityType: 'User',
-        entityId: user.id,
-        metadata: {
-          event: 'user_login',
-          timestamp: new Date().toISOString()
+    try {
+      const ipAddress = getHeader(event, 'x-forwarded-for') || getHeader(event, 'x-real-ip') || 'unknown'
+      await prisma.auditLog.create({
+        data: {
+          module: 'AUTH',
+          action: 'LOGIN',
+          ipAddress: ipAddress,
+          createdBy: user.email,
         }
-      }
-    })
+      })
+    } catch (auditError) {
+      // Don't fail login if audit log fails
+      console.warn('Failed to create audit log:', auditError)
+    }
     
     return {
       success: true,
