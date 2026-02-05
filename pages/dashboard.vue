@@ -70,14 +70,13 @@ onMounted(() => {
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <!-- Left: Logo and System Name -->
-          <div class="flex items-center space-x-3">
-            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-10 w-auto" />
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-12 w-auto hidden sm:block" />
             <div>
-              <h1 class="text-lg font-bold text-gray-900">SPK</h1>
-              <p class="text-xs text-gray-600">Sistem Pengurusan Kewarganegaraan</p>
+              <h1 class="text-2xl font-bold text-gray-900">Applicant Dashboard</h1>
+              <p class="text-sm text-gray-600">Welcome, {{ user?.name }}</p>
             </div>
           </div>
 
