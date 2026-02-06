@@ -111,6 +111,11 @@ const getTypeBadgeColor = (type: string) => {
   return colors[type] || 'bg-gray-100 text-gray-800'
 }
 
+const navigateToApplication = (preApp: any) => {
+  // Navigate to pre-application detail page
+  navigateTo(`/admin/pra-permohonan/${preApp.id}`)
+}
+
 const clearFilters = () => {
   searchQuery.value = ''
   statusFilter.value = ''
@@ -247,7 +252,8 @@ onMounted(() => {
           <tr
             v-for="preApp in filteredPreApplications"
             :key="preApp.id"
-            class="hover:bg-gray-50 transition-colors"
+            @click="navigateToApplication(preApp)"
+            class="hover:bg-gray-50 transition-colors cursor-pointer"
           >
             <!-- ID Permohonan -->
             <td class="px-6 py-4 whitespace-nowrap">

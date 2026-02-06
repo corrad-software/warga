@@ -41,7 +41,7 @@ const navigationSections = [
         icon: 'M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4'
       },
       {
-        name: 'Jadual Angkat Sumpah',
+        name: 'Tadbir Angkat Sumpah',
         href: '/admin/jadual-sumpah',
         icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
       },
@@ -58,7 +58,29 @@ const navigationSections = [
       {
         name: 'Pelaporan',
         href: '/admin/pelaporan',
-        icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+        icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+        children: [
+          {
+            name: 'Status Permohonan',
+            href: '/admin/pelaporan/status-permohonan'
+          },
+          {
+            name: 'Prestasi Pemprosesan',
+            href: '/admin/pelaporan/prestasi-pemprosesan'
+          },
+          {
+            name: 'Statistik Kategori Permohonan',
+            href: '/admin/pelaporan/statistik-kategori'
+          },
+          {
+            name: 'Pembayaran',
+            href: '/admin/pelaporan/pembayaran'
+          },
+          {
+            name: 'Angkat Sumpah',
+            href: '/admin/pelaporan/angkat-sumpah'
+          }
+        ]
       }
     ]
   },
@@ -119,6 +141,11 @@ const navigationSections = [
         name: 'Peranan & Kebenaran',
         href: '/admin/peranan',
         icon: 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z'
+      },
+      {
+        name: 'Pengurusan Aliran Kerja',
+        href: '/admin/aliran-kerja',
+        icon: 'M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z'
       }
     ]
   }
