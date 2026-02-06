@@ -162,6 +162,17 @@ const getApplicationType = (preApp: any) => {
   return preApp.applicant?.applicationType
 }
 
+// Navigate to application detail
+const navigateToDetail = (preApp: any) => {
+  if (preApp.applications && preApp.applications.length > 0) {
+    // Has linked application - go to application view
+    navigateTo(`/admin/pendaftaran/${preApp.applications[0].id}`)
+  } else {
+    // Only pre-application - go to pra-permohonan view
+    navigateTo(`/admin/pra-permohonan/${preApp.id}`)
+  }
+}
+
 // Watch for filter changes
 watch([searchQuery, statusFilter], () => {
   currentPage.value = 1
@@ -281,6 +292,7 @@ onMounted(() => {
           <tr
             v-for="preApp in filteredPreApplications"
             :key="preApp.id"
+            @click="navigateToDetail(preApp)"
             class="hover:bg-gray-50 cursor-pointer transition-colors"
           >
             <!-- Application Number -->

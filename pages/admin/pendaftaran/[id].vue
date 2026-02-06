@@ -8,40 +8,42 @@ const route = useRoute()
 const router = useRouter()
 const { token } = useAuth()
 
-const preAppId = route.params.id as string
+const appId = route.params.id as string
 
-const preApplication = ref<any>(null)
+const application = ref<any>(null)
 const loading = ref(true)
 const error = ref('')
 const submitting = ref(false)
 
-// Verification form
-const verificationForm = ref({
+// Approval form
+const approvalForm = ref({
   status: '',
   notes: ''
 })
 
-const fetchPreApplication = async () => {
+const fetchApplication = async () => {
   loading.value = true
   error.value = ''
 
   try {
-    const response = await $fetch(`/api/pra-permohonan/${preAppId}`, {
+    const response = await $fetch(`/api/pendaftaran/${appId}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     })
 
     if (response.success) {
-      preApplication.value = response.data.preApplication
-      // Initialize verification form with existing status
-      verificationForm.value = {
-        status: response.data.preApplication.status || '',
-        notes: response.data.preApplication.reviewNotes || ''
+      application.value = response.data.application
+      // Initialize approval form with existing data if available
+      if (response.data.application.latestApproval) {
+        approvalForm.value = {
+          status: response.data.application.latestApproval.decision || '',
+          notes: response.data.application.latestApproval.decisionNotes || ''
+        }
       }
     }
   } catch (err: any) {
-    error.value = err.data?.message || 'Gagal memuatkan butiran pra-permohonan'
+    error.value = err.data?.message || 'Gagal memuatkan butiran permohonan'
   } finally {
     loading.value = false
   }
@@ -65,58 +67,61 @@ const formatType = (type: string) => {
   return typeMap[type] || type || '-'
 }
 
-const hasLinkedApplication = computed(() => {
-  return preApplication.value?.applications && preApplication.value.applications.length > 0
-})
-
-const navigateToApplication = () => {
-  if (hasLinkedApplication.value) {
-    const appId = preApplication.value.applications[0].id
-    router.push(`/admin/applications/${appId}`)
+const formatStatus = (status: string) => {
+  const statusMap: Record<string, string> = {
+    PRA_LENGKAP: 'Pra-Lengkap',
+    TIDAK_LENGKAP: 'Tidak Lengkap',
+    BARU: 'Baru',
+    DALAM_SEMAKAN: 'Dalam Semakan',
+    MENUNGGU_DOKUMEN: 'Menunggu Dokumen',
+    DILULUSKAN: 'Diluluskan',
+    DITOLAK: 'Ditolak',
+    SELESAI: 'Selesai'
   }
+  return statusMap[status] || status?.replace(/_/g, ' ') || '-'
 }
 
 const getMotherInfo = computed(() => {
-  return preApplication.value?.applicant?.parents?.find((p: any) => p.parentCategory === 'MOTHER')
+  return application.value?.preApplication?.applicant?.parents?.find((p: any) => p.parentCategory === 'MOTHER')
 })
 
 const getFatherInfo = computed(() => {
-  return preApplication.value?.applicant?.parents?.find((p: any) => p.parentCategory === 'FATHER')
+  return application.value?.preApplication?.applicant?.parents?.find((p: any) => p.parentCategory === 'FATHER')
 })
 
-// Submit verification
-const submitVerification = async () => {
-  if (!verificationForm.value.status) {
-    alert('Sila pilih status pengesahan')
+// Submit approval
+const submitApproval = async () => {
+  if (!approvalForm.value.status) {
+    alert('Sila pilih status kelulusan')
     return
   }
   
   submitting.value = true
   try {
-    const response = await $fetch(`/api/pra-permohonan/${preAppId}/verify`, {
+    const response = await $fetch(`/api/pendaftaran/${appId}/approve`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token.value}`
       },
       body: {
-        status: verificationForm.value.status,
-        reviewNotes: verificationForm.value.notes
+        decision: approvalForm.value.status,
+        decisionNotes: approvalForm.value.notes
       }
     })
     
     if (response.success) {
-      alert('Pengesahan berjaya disimpan')
-      await fetchPreApplication()
+      alert('Kelulusan berjaya disimpan')
+      await fetchApplication()
     }
   } catch (err: any) {
-    alert(err.data?.message || 'Gagal menyimpan pengesahan')
+    alert(err.data?.message || 'Gagal menyimpan kelulusan')
   } finally {
     submitting.value = false
   }
 }
 
 onMounted(() => {
-  fetchPreApplication()
+  fetchApplication()
 })
 </script>
 
@@ -139,7 +144,7 @@ onMounted(() => {
       <!-- Loading State -->
       <div v-if="loading" class="bg-white shadow rounded-lg text-center py-12">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <p class="mt-2 text-gray-600">Memuatkan butiran pra-permohonan...</p>
+        <p class="mt-2 text-gray-600">Memuatkan butiran permohonan...</p>
       </div>
 
       <!-- Error Message -->
@@ -156,36 +161,18 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Content: Review Section -->
-      <div v-else-if="preApplication" class="bg-white shadow rounded-lg">
+      <!-- Content: Review Section (View Only) -->
+      <div v-else-if="application" class="bg-white shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6 space-y-6">
           <!-- Header -->
           <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Pra-Permohonan</h2>
-            <p class="mt-2 text-sm text-gray-600">Sila semak semua Butiran sebelum pengesahan</p>
-          </div>
-
-          <!-- Linked Application Alert -->
-          <div v-if="hasLinkedApplication" class="rounded-md bg-blue-50 p-4 mb-6">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <div class="ml-3 flex-1">
-                <p class="text-sm text-blue-700">
-                  Pra-permohonan ini telah ditukar kepada permohonan penuh.
-                </p>
-              </div>
-              <div>
-                <button
-                  @click="navigateToApplication"
-                  class="text-sm font-medium text-blue-700 hover:text-blue-600"
-                >
-                  Lihat Permohonan →
-                </button>
-              </div>
+            <h2 class="text-2xl font-bold text-gray-900">Butiran Permohonan</h2>
+            <p class="mt-2 text-sm text-gray-600">Paparan Maklumat Permohonan (Mod Lihat Sahaja)</p>
+            <div class="mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{ application.applicationRef }}
             </div>
           </div>
 
@@ -200,20 +187,20 @@ onMounted(() => {
             <dl class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
               <div class="sm:col-span-2">
                 <dt class="text-xs font-medium text-gray-500">Nama Penuh</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.fullName || '-' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.fullName || '-' }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">No. Kad Pengenalan</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.idNumber || '-' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.idNumber || '-' }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">Hubungan dengan Subjek</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.relationWithEnrolledPerson || '-' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.relationWithEnrolledPerson || '-' }}</dd>
               </div>
               <div class="sm:col-span-2">
                 <dt class="text-xs font-medium text-gray-500">Alamat Kediaman</dt>
                 <dd class="mt-1 text-sm text-gray-900">
-                  {{ [preApplication.applicant?.permAddress1, preApplication.applicant?.permAddress2, preApplication.applicant?.permAddress3, preApplication.applicant?.permCity, preApplication.applicant?.permPostcode, preApplication.applicant?.permState, preApplication.applicant?.permCountry].filter(Boolean).join(', ') || '-' }}
+                  {{ [application.preApplication?.applicant?.permAddress1, application.preApplication?.applicant?.permAddress2, application.preApplication?.applicant?.permAddress3, application.preApplication?.applicant?.permCity, application.preApplication?.applicant?.permPostcode, application.preApplication?.applicant?.permState, application.preApplication?.applicant?.permCountry].filter(Boolean).join(', ') || '-' }}
                 </dd>
               </div>
             </dl>
@@ -230,31 +217,31 @@ onMounted(() => {
             <dl class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
               <div class="sm:col-span-2">
                 <dt class="text-xs font-medium text-gray-500">Nama Penuh</dt>
-                <dd class="mt-1 text-sm font-medium text-gray-900">{{ preApplication.applicant?.enrolledPersName || preApplication.applicant?.fullName || '-' }}</dd>
+                <dd class="mt-1 text-sm font-medium text-gray-900">{{ application.preApplication?.applicant?.enrolledPersName || application.preApplication?.applicant?.fullName || '-' }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">Tarikh Lahir</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ formatDate(preApplication.applicant?.dateOfBirth) }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ formatDate(application.preApplication?.applicant?.dateOfBirth) }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">Tempat Lahir</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.placeOfBirth || '-' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.placeOfBirth || '-' }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">Jantina</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.gender === 'M' ? 'Lelaki' : 'Perempuan' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.gender === 'M' ? 'Lelaki' : 'Perempuan' }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">Bangsa</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.race || '-' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.race || '-' }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">Agama</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.religion || '-' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.religion || '-' }}</dd>
               </div>
-              <div v-if="preApplication.applicant?.occupation">
+              <div v-if="application.preApplication?.applicant?.occupation">
                 <dt class="text-xs font-medium text-gray-500">Pekerjaan</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.occupation }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.occupation }}</dd>
               </div>
             </dl>
           </div>
@@ -270,17 +257,17 @@ onMounted(() => {
             <dl class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
               <div>
                 <dt class="text-xs font-medium text-gray-500">Pernah Disabitkan Kesalahan</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.anyOffence === 'Y' ? 'YA' : 'TIDAK' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.anyOffence === 'Y' ? 'YA' : 'TIDAK' }}</dd>
               </div>
               <div>
                 <dt class="text-xs font-medium text-gray-500">Pernah Dikurung dalam Penjara/Institusi Psikiatrik</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ preApplication.applicant?.anyConfination === 'Y' ? 'YA' : 'TIDAK' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ application.preApplication?.applicant?.anyConfination === 'Y' ? 'YA' : 'TIDAK' }}</dd>
               </div>
             </dl>
-            <div v-if="preApplication.applicant?.offenceConfinations?.length > 0" class="mt-4">
+            <div v-if="application.preApplication?.applicant?.offenceConfinations?.length > 0" class="mt-4">
               <h4 class="text-sm font-medium text-gray-700 mb-2">Butir-butir Rekod:</h4>
               <div class="space-y-2">
-                <div v-for="(record, index) in preApplication.applicant?.offenceConfinations" :key="index" class="bg-gray-50 rounded-lg p-3">
+                <div v-for="(record, index) in application.preApplication?.applicant?.offenceConfinations" :key="index" class="bg-gray-50 rounded-lg p-3">
                   <p class="text-sm font-medium text-gray-900">{{ index + 1 }}. {{ record.offence || '-' }}</p>
                   <p class="text-xs text-gray-500">Denda: {{ record.fineAmount || '-' }} | Tarikh: {{ formatDate(record.confinationStartDate) }} hingga {{ formatDate(record.confinationEndDate) }} | Negara: {{ record.country || '-' }}</p>
                 </div>
@@ -349,7 +336,7 @@ onMounted(() => {
           </div>
 
           <!-- Section E: Siblings -->
-          <div v-if="preApplication.applicant?.siblings?.length > 0" class="border-t border-gray-200 pt-4">
+          <div v-if="application.preApplication?.applicant?.siblings?.length > 0" class="border-t border-gray-200 pt-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
               <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -357,7 +344,7 @@ onMounted(() => {
               Seksyen E - Maklumat mengenai Adik Beradik
             </h3>
             <div class="space-y-3">
-              <div v-for="(sibling, index) in preApplication.applicant?.siblings" :key="index" class="bg-gray-50 rounded-lg p-3">
+              <div v-for="(sibling, index) in application.preApplication?.applicant?.siblings" :key="index" class="bg-gray-50 rounded-lg p-3">
                 <p class="text-sm font-medium text-gray-900">{{ index + 1 }}. {{ sibling.siblingName }}</p>
                 <p class="text-xs text-gray-500">{{ sibling.age }} tahun | {{ sibling.nationality }}</p>
               </div>
@@ -377,21 +364,54 @@ onMounted(() => {
                 <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
-                <span class="text-gray-700">Borang Pra-Permohonan</span>
+                <span class="text-gray-700">Borang Permohonan Lengkap</span>
               </div>
             </div>
-            <p class="mt-3 text-xs text-gray-500">Dokumen lengkap akan dimuat naik selepas pra-permohonan diluluskan</p>
+            <p class="mt-3 text-xs text-gray-500">Dokumen dikemukakan bersama permohonan</p>
           </div>
 
-          <!-- Pengesahan Section -->
+          <!-- Pengesahan Section (Read-Only) -->
           <div class="border-t border-gray-200 pt-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Pengesahan
+              Pengesahan (Paparan Sahaja)
             </h3>
-            <div class="bg-blue-50 rounded-lg p-5 border border-blue-200">
+            <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="space-y-4">
+                <!-- Status (Read-Only) -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                  <div class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm text-gray-700">
+                    {{ formatStatus(application.status) }}
+                  </div>
+                </div>
+
+                <!-- Catatan (Read-Only) -->
+                <div v-if="application.preApplication?.reviewNotes">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+                  <div class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm text-gray-700 min-h-[100px]">
+                    {{ application.preApplication?.reviewNotes }}
+                  </div>
+                </div>
+
+                <p class="text-xs text-gray-500 italic">
+                  ℹ️ Halaman ini dalam mod paparan sahaja. Untuk mengemaskini maklumat, sila gunakan halaman pengurusan yang berkaitan.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kelulusan Section -->
+          <div class="border-t border-gray-200 pt-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Kelulusan
+            </h3>
+            <div class="bg-green-50 rounded-lg p-5 border border-green-200">
               <div class="space-y-4">
                 <!-- Status Dropdown -->
                 <div>
@@ -399,12 +419,12 @@ onMounted(() => {
                     Status <span class="text-red-500">*</span>
                   </label>
                   <select
-                    v-model="verificationForm.status"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    v-model="approvalForm.status"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     <option value="">Pilih Status</option>
-                    <option value="PRA_LENGKAP">Pra-Lengkap</option>
-                    <option value="TIDAK_LENGKAP">Tidak Lengkap</option>
+                    <option value="LULUS">Lulus</option>
+                    <option value="TIDAK_LULUS">Tidak Lulus</option>
                   </select>
                 </div>
 
@@ -414,25 +434,25 @@ onMounted(() => {
                     Catatan
                   </label>
                   <textarea
-                    v-model="verificationForm.notes"
+                    v-model="approvalForm.notes"
                     rows="4"
-                    placeholder="Masukkan catatan atau ulasan..."
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    placeholder="Masukkan catatan atau ulasan mengenai kelulusan..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
                   ></textarea>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="flex justify-end pt-2">
                   <button
-                    @click="submitVerification"
-                    :disabled="submitting || !verificationForm.status"
-                    class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    @click="submitApproval"
+                    :disabled="submitting || !approvalForm.status"
+                    class="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     <svg v-if="submitting" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>{{ submitting ? 'Menyimpan...' : 'Sahkan dan Simpan' }}</span>
+                    <span>{{ submitting ? 'Menyimpan...' : 'Simpan' }}</span>
                   </button>
                 </div>
               </div>

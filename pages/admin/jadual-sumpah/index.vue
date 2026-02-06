@@ -73,6 +73,75 @@ const changeSection = (section: string) => {
   activeSection.value = section
 }
 
+// Edit schedule
+const editSchedule = (schedule: any) => {
+  console.log('Edit schedule:', schedule)
+  // TODO: Implement edit functionality
+  alert(`Edit jadual #${schedule.id}`)
+}
+
+// Delete schedule
+const deleteSchedule = (schedule: any) => {
+  if (confirm(`Adakah anda pasti mahu memadam jadual #${schedule.id}?`)) {
+    console.log('Delete schedule:', schedule)
+    // TODO: Implement delete functionality
+    alert(`Padam jadual #${schedule.id}`)
+  }
+}
+
+// Edit notification
+const editNotification = (notification: any) => {
+  console.log('Edit notification:', notification)
+  // TODO: Implement edit functionality
+  alert(`Edit notifikasi #${notification.id}`)
+}
+
+// Delete notification
+const deleteNotification = (notification: any) => {
+  if (confirm(`Adakah anda pasti mahu memadam notifikasi #${notification.id}?`)) {
+    console.log('Delete notification:', notification)
+    // TODO: Implement delete functionality
+    alert(`Padam notifikasi #${notification.id}`)
+  }
+}
+
+// Edit oath record
+const editOathRecord = (record: any) => {
+  console.log('Edit oath record:', record)
+  // TODO: Implement edit functionality
+  alert(`Edit rekod sumpah #${record.id}`)
+}
+
+// Delete oath record
+const deleteOathRecord = (record: any) => {
+  if (confirm(`Adakah anda pasti mahu memadam rekod sumpah #${record.id}?`)) {
+    console.log('Delete oath record:', record)
+    // TODO: Implement delete functionality
+    alert(`Padam rekod sumpah #${record.id}`)
+  }
+}
+
+// Add new schedule
+const addSchedule = () => {
+  console.log('Add new schedule')
+  // TODO: Implement add functionality
+  alert('Tambah jadual baharu')
+}
+
+// Add new notification
+const addNotification = () => {
+  console.log('Add new notification')
+  // TODO: Implement add functionality
+  alert('Tambah notifikasi baharu')
+}
+
+// Add new oath record
+const addOathRecord = () => {
+  console.log('Add new oath record')
+  // TODO: Implement add functionality
+  alert('Tambah rekod sumpah baharu')
+}
+
 // Get status badge class for oath status
 const getOathStatusBadgeClass = (status: string) => {
   switch (status) {
@@ -418,12 +487,32 @@ onMounted(() => {
                       </div>
                       <p class="text-xs text-gray-500">ID Jadual: #{{ schedule.id }}</p>
                     </div>
-                    <span 
-                      class="px-3 py-1 text-xs font-medium rounded-full"
-                      :class="getOathStatusBadgeClass(schedule.status)"
-                    >
-                      {{ getOathStatusLabel(schedule.status) }}
-                    </span>
+                    <div class="flex items-center gap-2">
+                      <span 
+                        class="px-3 py-1 text-xs font-medium rounded-full"
+                        :class="getOathStatusBadgeClass(schedule.status)"
+                      >
+                        {{ getOathStatusLabel(schedule.status) }}
+                      </span>
+                      <button
+                        @click="editSchedule(schedule)"
+                        class="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                        title="Edit"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        @click="deleteSchedule(schedule)"
+                        class="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                        title="Delete"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   
                   <div class="grid grid-cols-2 gap-4 text-sm">
@@ -462,13 +551,41 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-center pt-4">
+                  <button
+                    @click="addSchedule"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Jadual Baharu
+                  </button>
+                </div>
               </div>
 
-              <div v-else class="text-center py-12 text-gray-500">
-                <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p class="text-sm mt-4">Tiada jadual sumpah</p>
+              <div v-else class="space-y-4">
+                <div class="text-center py-12 text-gray-500">
+                  <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p class="text-sm mt-4">Tiada jadual sumpah</p>
+                </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-center">
+                  <button
+                    @click="addSchedule"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Jadual Baharu
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -497,12 +614,32 @@ onMounted(() => {
                       </div>
                       <p class="text-xs text-gray-500">ID Notifikasi: #{{ notification.id }}</p>
                     </div>
-                    <span 
-                      class="px-3 py-1 text-xs font-medium rounded-full"
-                      :class="getNotificationStatusBadgeClass(notification.status)"
-                    >
-                      {{ notification.status }}
-                    </span>
+                    <div class="flex items-center gap-2">
+                      <span 
+                        class="px-3 py-1 text-xs font-medium rounded-full"
+                        :class="getNotificationStatusBadgeClass(notification.status)"
+                      >
+                        {{ notification.status }}
+                      </span>
+                      <button
+                        @click="editNotification(notification)"
+                        class="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                        title="Edit"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        @click="deleteNotification(notification)"
+                        class="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                        title="Delete"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   
                   <div class="mb-4">
@@ -531,13 +668,41 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-center pt-4">
+                  <button
+                    @click="addNotification"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Notifikasi Baharu
+                  </button>
+                </div>
               </div>
 
-              <div v-else class="text-center py-12 text-gray-500">
-                <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <p class="text-sm mt-4">Tiada notifikasi</p>
+              <div v-else class="space-y-4">
+                <div class="text-center py-12 text-gray-500">
+                  <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  <p class="text-sm mt-4">Tiada notifikasi</p>
+                </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-center">
+                  <button
+                    @click="addNotification"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Notifikasi Baharu
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -588,13 +753,41 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-center pt-4">
+                  <button
+                    @click="addSchedule"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Jadual Baharu
+                  </button>
+                </div>
               </div>
 
-              <div v-else class="text-center py-12 text-gray-500">
-                <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p class="text-sm mt-4">Tiada rekod kehadiran</p>
+              <div v-else class="space-y-4">
+                <div class="text-center py-12 text-gray-500">
+                  <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p class="text-sm mt-4">Tiada rekod kehadiran</p>
+                </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-center">
+                  <button
+                    @click="addSchedule"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Jadual Baharu
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -626,9 +819,29 @@ onMounted(() => {
                         </div>
                         <p class="text-xs text-gray-500">Jadual: #{{ schedule.id }}</p>
                       </div>
-                      <span class="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                        SELESAI
-                      </span>
+                      <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                          SELESAI
+                        </span>
+                        <button
+                          @click="editOathRecord(record)"
+                          class="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          @click="deleteOathRecord(record)"
+                          class="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 text-sm mb-4">
@@ -665,13 +878,41 @@ onMounted(() => {
                     </div>
                   </div>
                 </template>
+
+                <!-- Add Button -->
+                <div class="flex justify-center pt-4">
+                  <button
+                    @click="addOathRecord"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Rekod Sumpah Baharu
+                  </button>
+                </div>
               </div>
 
-              <div v-else class="text-center py-12 text-gray-500">
-                <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p class="text-sm mt-4">Tiada rekod sumpah</p>
+              <div v-else class="space-y-4">
+                <div class="text-center py-12 text-gray-500">
+                  <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p class="text-sm mt-4">Tiada rekod sumpah</p>
+                </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-center">
+                  <button
+                    @click="addOathRecord"
+                    class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                  >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Rekod Sumpah Baharu
+                  </button>
+                </div>
               </div>
             </div>
           </div>

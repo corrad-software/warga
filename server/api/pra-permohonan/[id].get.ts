@@ -1,6 +1,7 @@
 import { authenticateUser } from '~/lib/middleware/auth'
 import { prisma } from '~/lib/prisma'
 
+// Get pre-application details by ID
 export default defineEventHandler(async (event) => {
   try {
     const currentUser = await authenticateUser(event)
@@ -21,14 +22,15 @@ export default defineEventHandler(async (event) => {
             parents: true,
             children: true,
             siblings: true,
+            offenceConfinations: true,
           }
         },
         applications: {
           select: {
             id: true,
-            applicationNumber: true,
+            applicationRef: true,
             status: true,
-            createdAt: true,
+            createdDate: true,
           }
         }
       }
