@@ -29,9 +29,11 @@ const handleLogin = async () => {
 
   if (result.success) {
     // Redirect based on role
-    if (result.user.role === 'PEMOHON') {
+    if (result.user.role === 'ADMIN') {
+      router.push('/admin')
+    } else if (result.user.role === 'PEMOHON') {
       router.push('/dashboard')
-    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN', 'ADMIN'].includes(result.user.role)) {
+    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN'].includes(result.user.role)) {
       router.push('/officer/dashboard')
     } else {
       router.push('/')
@@ -45,7 +47,9 @@ const handleLogin = async () => {
 onMounted(async () => {
   const { isAuthenticated, user } = useAuth()
   if (isAuthenticated.value && user.value) {
-    if (user.value.role === 'PEMOHON') {
+    if (user.value.role === 'ADMIN') {
+      router.push('/admin')
+    } else if (user.value.role === 'PEMOHON') {
       router.push('/dashboard')
     } else {
       router.push('/officer/dashboard')

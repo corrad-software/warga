@@ -10,9 +10,11 @@ onMounted(async () => {
 
   // Redirect based on authentication status
   if (isAuthenticated.value && user.value) {
-    if (user.value.role === 'PEMOHON') {
+    if (user.value.role === 'ADMIN') {
+      router.push('/admin')
+    } else if (user.value.role === 'PEMOHON') {
       router.push('/dashboard')
-    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN', 'ADMIN'].includes(user.value.role)) {
+    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN'].includes(user.value.role)) {
       router.push('/officer/dashboard')
     }
   } else {
