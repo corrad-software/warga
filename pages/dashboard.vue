@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { user, logout, token } = useAuth()
+const { user, token } = useAuth()
 const router = useRouter()
 
 const applications = ref([])
@@ -50,7 +50,7 @@ const fetchApplications = async () => {
 }
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('en-MY', {
+  return new Date(date).toLocaleDateString('ms-MY', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
@@ -68,49 +68,12 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-4">
-            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-12 w-auto hidden sm:block" />
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Applicant Dashboard</h1>
-              <p class="text-sm text-gray-600">Welcome, {{ user?.name }}</p>
-            </div>
-          </div>
-
-          <!-- Right: Menu -->
-          <nav class="flex items-center space-x-6">
-            <NuxtLink
-              to="/dashboard"
-              class="text-sm font-medium text-gray-700 hover:text-blue-600"
-            >
-              My Applications
-            </NuxtLink>
-            <NuxtLink
-              to="/payments"
-              class="text-sm font-medium text-gray-700 hover:text-blue-600"
-            >
-              My Payments
-            </NuxtLink>
-            <button
-              @click="logout"
-              class="text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              Logout
-            </button>
-          </nav>
-        </div>
-      </div>
-    </header>
-
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Page Title -->
       <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-900">Welcome, {{ user?.name }}</h2>
-        <p class="text-gray-600 mt-2">Manage your citizenship applications</p>
+        <h2 class="text-3xl font-bold text-gray-900">Selamat Datang, {{ user?.name }}</h2>
+        <p class="text-gray-600 mt-2">Urus permohonan kewarganegaraan anda</p>
       </div>
 
       <!-- Actions -->
@@ -122,7 +85,7 @@ onMounted(() => {
           <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          New Application
+          Permohonan Baharu
         </button>
         <button
           @click="router.push('/payments')"
@@ -131,7 +94,7 @@ onMounted(() => {
           <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
-          My Payments
+          Pembayaran
         </button>
       </div>
 
@@ -159,7 +122,7 @@ onMounted(() => {
                 <div class="ml-5 w-0 flex-1">
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">
-                      Total Applications
+                      Jumlah Permohonan
                     </dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-semibold text-gray-900">
@@ -167,7 +130,7 @@ onMounted(() => {
                       </div>
                     </dd>
                     <dd class="text-xs text-gray-500 mt-1">
-                      All time
+                      Keseluruhan
                     </dd>
                   </dl>
                 </div>
@@ -189,7 +152,7 @@ onMounted(() => {
                 <div class="ml-5 w-0 flex-1">
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">
-                      In Progress
+                      Dalam Proses
                     </dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-semibold text-gray-900">
@@ -197,7 +160,7 @@ onMounted(() => {
                       </div>
                     </dd>
                     <dd class="text-xs text-gray-500 mt-1">
-                      Pending review
+                      Menunggu semakan
                     </dd>
                   </dl>
                 </div>
@@ -219,7 +182,7 @@ onMounted(() => {
                 <div class="ml-5 w-0 flex-1">
                   <dl>
                     <dt class="text-sm font-medium text-gray-500 truncate">
-                      Completed
+                      Selesai
                     </dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-semibold text-gray-900">
@@ -227,7 +190,7 @@ onMounted(() => {
                       </div>
                     </dd>
                     <dd class="text-xs text-gray-500 mt-1">
-                      Successfully processed
+                      Berjaya diproses
                     </dd>
                   </dl>
                 </div>
@@ -240,7 +203,7 @@ onMounted(() => {
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <p class="mt-2 text-gray-600">Loading your applications...</p>
+        <p class="mt-2 text-gray-600">Memuatkan permohonan anda...</p>
       </div>
 
       <!-- Applications List -->
@@ -259,7 +222,7 @@ onMounted(() => {
                     {{ application.applicationNumber }}
                   </p>
                   <p class="mt-1 text-sm text-gray-600">
-                    Type: {{ application.type.replace(/_/g, ' ') }}
+                    Jenis: {{ application.type.replace(/_/g, ' ') }}
                   </p>
                 </div>
                 <div class="ml-4 flex-shrink-0">
@@ -279,14 +242,14 @@ onMounted(() => {
                     <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    Created: {{ formatDate(application.createdAt) }}
+                    Dicipta: {{ formatDate(application.createdAt) }}
                   </p>
                 </div>
                 <div v-if="application.submissionDate" class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                   <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  Submitted: {{ formatDate(application.submissionDate) }}
+                  Dihantar: {{ formatDate(application.submissionDate) }}
                 </div>
               </div>
             </div>
@@ -299,8 +262,8 @@ onMounted(() => {
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No applications</h3>
-        <p class="mt-1 text-sm text-gray-500">Get started by creating a new application.</p>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">Tiada permohonan</h3>
+        <p class="mt-1 text-sm text-gray-500">Mulakan dengan membuat permohonan baharu.</p>
         <div class="mt-6">
           <button
             @click="router.push('/applications/new')"
@@ -309,19 +272,10 @@ onMounted(() => {
             <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            New Application
+            Permohonan Baharu
           </button>
         </div>
       </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <p class="text-center text-sm text-gray-600">
-          © 2025 Sistem Pengurusan Kewarganegaraan (SPK) - Jabatan Pendaftaran Negara Malaysia
-        </p>
-      </div>
-    </footer>
   </div>
 </template>

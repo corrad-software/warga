@@ -14,84 +14,47 @@ datasource db {
 // ============================================
 
 enum UserRole {
-  PEMOHON // Applicant
-  PEGAWAI_KONSUL // Consular Officer
-  PEGAWAI_PENDAFTARAN // Registration Officer
+  PEMOHON              // Applicant
+  PEGAWAI_KONSUL       // Consular Officer
+  PEGAWAI_PENDAFTARAN  // Registration Officer
   ADMIN
 }
 
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-}
-
 enum NationalityStatus {
-  TIDAK_WARGANEGARA // Non-citizen
-  PEMOHON // Applicant
-  WARGANEGARA // Citizen
-  DITOLAK // Rejected
+  TIDAK_WARGANEGARA    // Non-citizen
+  PEMOHON              // Applicant
+  WARGANEGARA          // Citizen
+  DITOLAK              // Rejected
 }
 
 enum BiometricStatus {
-  TIDAK_LENGKAP // Incomplete
-  LENGKAP // Complete
-  DISAHKAN // Verified
-}
-
-enum Gender {
-  M // Male / Lelaki
-  F // Female / Perempuan
-}
-
-enum YesNo {
-  Y // Yes / Ya
-  T // No / Tidak
-}
-
-enum ParentCategory {
-  FATHER // Bapa
-  MOTHER // Ibu
+  TIDAK_LENGKAP        // Incomplete
+  LENGKAP              // Complete
+  DISAHKAN             // Verified
 }
 
 enum ApplicationType {
-  BORANG_H // Birth Abroad (Kelahiran Luar Negara)
-  BORANG_G // Article 15(2) Fastlane
-  TADBIR_SUMPAH // Oath Administration
-  KELAHIRAN_LUAR // Birth Abroad
-  PERKARA_15_2 // Article 15(2)
+  BORANG_H             // Birth Abroad (Kelahiran Luar Negara)
+  BORANG_G             // Article 15(2) Fastlane
+  TADBIR_SUMPAH        // Oath Administration
 }
 
 enum ApplicationStatus {
-  DRAFT // Draft / Draf
-  SUBMITTED // Submitted / Dihantar
-  PENDING_REVIEW // Pending Review / Menunggu Semakan
-  DOCUMENTS_VERIFIED // Documents Verified / Dokumen Disahkan
-  PENDING_BIOMETRIC // Pending Biometric / Menunggu Biometrik
-  BIOMETRIC_CAPTURED // Biometric Captured / Biometrik Diambil
-  PENDING_PAYMENT // Pending Payment / Menunggu Pembayaran
-  PAYMENT_COMPLETED // Payment Completed / Pembayaran Selesai
-  UNDER_REVIEW // Under Review / Dalam Semakan
-  APPROVED // Approved / Diluluskan
-  REJECTED // Rejected / Ditolak
-  PENDING_OATH // Pending Oath / Menunggu Sumpah
-  OATH_COMPLETED // Oath Completed / Sumpah Selesai
-  CERTIFICATE_ISSUED // Certificate Issued / Sijil Dikeluarkan
-  COMPLETED // Completed / Selesai
-  // New statuses from SQL
-  DALAM_PROSES // In Process
-  MENUNGGU_DOKUMEN // Waiting for Documents
-  SEDIA_KELULUSAN // Ready for Approval
-  DILULUSKAN // Approved
-  DITOLAK // Rejected
-  DITANGGUH // Postponed
-  MENUNGGU_SUMPAH // Waiting for Oath
-  SIJIL_DIKELUARKAN // Certificate Issued
-}
-
-enum PreApplicationStatus {
-  PRA_DAFTAR // Pre-registered
-  PRA_LENGKAP // Pre-complete
-  TIDAK_LENGKAP // Incomplete
+  DRAFT                // Draft
+  SUBMITTED            // Submitted
+  PENDING_REVIEW       // Pending Review
+  DOCUMENTS_VERIFIED   // Documents Verified
+  PENDING_BIOMETRIC    // Pending Biometric
+  BIOMETRIC_CAPTURED   // Biometric Captured
+  PENDING_PAYMENT      // Pending Payment
+  PAYMENT_COMPLETED    // Payment Completed
+  UNDER_REVIEW         // Under Review by Officer
+  APPROVED             // Approved
+  REJECTED             // Rejected
+  PENDING_OATH         // Pending Oath (for future oath)
+  OATH_COMPLETED       // Oath Completed
+  CERTIFICATE_ISSUED   // Certificate Issued
+  COMPLETED            // Completed
 }
 
 enum DocumentType {
@@ -110,11 +73,6 @@ enum DocumentVerificationStatus {
   VERIFIED
   REJECTED
   REQUIRES_MANUAL_CHECK
-  // New statuses from SQL
-  DIMUATNAIK // Uploaded
-  DISAHKAN // Verified
-  TIDAK_DISAHKAN // Not Verified
-  PERLU_TAMBAHAN // Needs Additional
 }
 
 enum PaymentStatus {
@@ -123,11 +81,6 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
-  // New statuses from SQL
-  BELUM_BAYAR // Not Paid
-  BERJAYA // Success
-  GAGAL // Failed
-  MENUNGGU // Waiting
 }
 
 enum PaymentMethod {
@@ -154,13 +107,6 @@ enum NotificationStatus {
   PENDING
   SENT
   FAILED
-  BERJAYA // Success
-  GAGAL // Failed
-}
-
-enum RecipientType {
-  PEMOHON // Applicant
-  PEGAWAI // Officer
 }
 
 enum AuditAction {
@@ -175,93 +121,40 @@ enum AuditAction {
   LOGOUT
 }
 
-enum BiometricType {
-  FINGERPRINT
-}
-
-enum BiometricCaptureStatus {
-  LENGKAP // Complete
-  TIDAK_LENGKAP // Incomplete
-  TIDAK_HADIR // Absent
-}
-
-enum ApprovalDecision {
-  LULUS // Approved
-  TOLAK // Rejected
-  TANGGUH // Postponed
-}
-
-enum OathStatus {
-  DIJADUALKAN // Scheduled
-  SELESAI // Completed
-  TIDAK_HADIR // Absent
-  DITANGGUH // Postponed
-}
-
 // ============================================
 // MODELS
 // ============================================
 
-// ============================================
-// ROLE MODEL
-// ============================================
-model Role {
-  id       Int     @id @default(autoincrement())
-  roleCode String? @unique @map("role_code")
-  roleName String? @map("role_name")
+model User {
+  id                 String            @id @default(uuid())
+  email              String            @unique
+  password           String            // Hashed password
+  name               String
+  icNumber           String?           @unique // Identity Card Number
+  passportNumber     String?
+  phoneNumber        String?
+  address            String?           
+  dateOfBirth        DateTime?
+  placeOfBirth       String?
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  role               UserRole          @default(PEMOHON)
+  nationalityStatus  NationalityStatus @default(TIDAK_WARGANEGARA)
+  biometricStatus    BiometricStatus   @default(TIDAK_LENGKAP)
+
+  isActive           Boolean           @default(true)
+  emailVerified      Boolean           @default(false)
+  emailVerifiedAt    DateTime?
+
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
 
   // Relations
-  users User[]
-
-  @@map("roles")
-}
-
-// ============================================
-// USER MODEL (Merged)
-// ============================================
-model User {
-  id String @id @default(uuid())
-
-  // From SQL users table
-  roleId       Int?    @map("role_id")
-  role2        Role?   @relation(fields: [roleId], references: [id])
-  fullName     String? @map("full_name")
-  email        String  @unique
-  phone        String?
-  passwordHash String? @map("password_hash")
-  status       String? @default("ACTIVE") // ACTIVE, INACTIVE
-
-  // Original fields
-  password       String // Hashed password
-  name           String
-  icNumber       String?   @unique // Identity Card Number
-  passportNumber String?
-  phoneNumber    String?
-  address        String?
-  dateOfBirth    DateTime?
-  placeOfBirth   String?
-
-  role              UserRole          @default(PEMOHON)
-  nationalityStatus NationalityStatus @default(TIDAK_WARGANEGARA)
-  biometricStatus   BiometricStatus   @default(TIDAK_LENGKAP)
-
-  isActive        Boolean   @default(true)
-  emailVerified   Boolean   @default(false)
-  emailVerifiedAt DateTime?
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  createdDate DateTime? @map("createddate")
-  createdBy   String?   @map("createdby")
-  updatedDate DateTime? @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  // Relations - old models removed, using new Applicant-based flow
+  applications       Application[]
+  biometrics         Biometric[]
+  certificates       Certificate[]
+  auditLogs          AuditLog[]
+  notifications      Notification[]
+  paymentsAsApplicant Payment[]        @relation("ApplicantPayments")
 
   @@index([email])
   @@index([icNumber])
@@ -269,688 +162,247 @@ model User {
   @@map("users")
 }
 
-// ============================================
-// APPLICANT MODEL (New)
-// ============================================
-model Applicant {
-  id              Int       @id @default(autoincrement()) @map("applicant_id")
-  applicationType String?   @map("application_type")
-  fullName        String    @map("full_name")
-  fullNameOther   String?   @map("full_name_other")
-  gender          String? // M, F
-  dateOfBirth     DateTime? @map("date_of_birth")
-  placeOfBirth    String?   @map("place_of_birth")
-  nationality     String?
-  idType          String?   @map("id_type")
-  idNumber        String?   @map("id_number")
-
-  // Relation with enrolled person
-  relationWithEnrolledPerson String? @map("relation_with_enrolled_person")
-  reasonIfNotBioParent       String? @map("reason_if_not_bio_parent")
-  enrolledPersName           String? @map("enrolled_pers_name")
-  enrolledPersNameOther      String? @map("enrolled_pers_name_other")
-
-  // Permanent Address
-  permAddress1 String? @map("perm_address1")
-  permAddress2 String? @map("perm_address2")
-  permAddress3 String? @map("perm_address3")
-  permPostcode String? @map("perm_postcode")
-  permCity     String? @map("perm_city")
-  permState    String? @map("perm_state")
-  permCountry  String? @map("perm_country")
-
-  // Correspondence Address
-  corresAddress1 String? @map("corres_address1")
-  corresAddress2 String? @map("corres_address2")
-  corresAddress3 String? @map("corres_address3")
-  corresPostcode String? @map("corres_postcode")
-  corresCity     String? @map("corres_city")
-  corresState    String? @map("corres_state")
-  corresCountry  String? @map("corres_country")
-
-  // Personal Info
-  race               String?
-  religion           String?
-  maritalStatus      String? @map("marital_status")
-  occupation         String?
-  countryOfResidence String? @map("country_of_residence")
-
-  // Nationality Info
-  isHoldingOtherNationality String?   @map("is_holding_other_nationality") // Y, T
-  arrivalDate               DateTime? @map("arrival_date")
-  arrivalPlace              String?   @map("arrival_place")
-  enteringPermitNo          String?   @map("entering_permit_no")
-  currPassportNo            String?   @map("curr_passport_no")
-  residencyGivenDate        DateTime? @map("residency_given_date")
-
-  // Previous Application
-  isPreviouslyApply String?   @map("is_previously_apply") // Y, T
-  locationApply     String?   @map("location_apply")
-  dateApply         DateTime? @map("date_apply")
-  statusApply       DateTime? @map("status_apply")
-
-  // Previous Citizenship
-  isPrevMalaysianCitizenship String?   @map("is_prev_malaysian_citizenship") // Y, T
-  datePrevCitzObtain         DateTime? @map("date_prev_citz_obtain")
-  howPrevCitzObtain          String?   @map("how_prev_citz_obtain")
-  prevCitzNo                 String?   @map("prev_citz_no")
-  datePrevCitzRelinquish     DateTime? @map("date_prev_citz_relinquish")
-  reasonPrevCitzRelinquish   String?   @map("reason_prev_citz_relinquish")
-
-  // Additional Info
-  isApprovalLetterReceived String? @map("is_approval_letter_received") // Y, T
-  isTravelToOthCountry5y   String? @map("is_travel_to_oth_country_5y") // Y, T
-  isAllChildStayWithU      String? @map("is_all_child_stay_with_u") // Y, T
-  isAllChildResidency      String? @map("is_all_child_residency") // Y, T
-  anyOffence               String? @map("any_offence") // Y, T
-  anyConfination           String? @map("any_confination") // Y, T
-
-  // Spouse Info
-  spouseName               String?   @map("spouse_name")
-  spouseDateOfBirth        DateTime? @map("spouse_date_of_birth")
-  spousePlaceOfBirth       String?   @map("spouse_place_of_birth")
-  spouseNationality        String?   @map("spouse_nationality")
-  spouseIdNumber           String?   @map("spouse_id_number")
-  spouseCountryOfBirth     String?   @map("spouse_country_of_birth")
-  marriedDate              DateTime? @map("married_date")
-  marriedPlace             String?   @map("married_place")
-  isSpouseHasOtherNational String?   @map("is_spouse_has_other_national") // Y, T
-  spouseOtherNational      String?   @map("spouse_other_national")
-  dateSpouseOthNatObtain   DateTime? @map("date_spouse_oth_nat_obtain")
-  howSpouseOthNatObtain    String?   @map("how_spouse_oth_nat_obtain")
-  spouseAddress            String?   @map("spouse_address")
-  spouseAddPostcode        String?   @map("spouse_add_postcode")
-
-  // Extended
-  extendedColumn Json?     @map("extended_column")
-  signedDate     DateTime? @map("signeddate")
-
-  // Audit fields
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  // Relations
-  children            Children[]
-  siblings            Sibling[]
-  offenceConfinations OffenceConfination[]
-  parents             Parent[]
-  preApplications     PreApplication[]
-  education           Education[]
-
-  @@map("applicant")
-}
-
-// ============================================
-// EDUCATION MODEL
-// ============================================
-model Education {
-  id               Int       @id @default(autoincrement()) @map("education_id")
-  applicantId      Int       @map("applicant_id")
-  applicant        Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-  
-  certificateName  String    @map("certificate_name")
-  startDate        DateTime? @map("start_date")
-  endDate          DateTime? @map("end_date")
-  educationLevel   String?   @map("education_level")
-  institutionName  String?   @map("institution_name")
-  
-  createdDate      DateTime  @default(now()) @map("createddate")
-  createdBy        String    @map("createdby")
-  updatedDate      DateTime? @updatedAt @map("updateddate")
-  updatedBy        String?   @map("updatedby")
-
-  @@index([applicantId])
-  @@map("education")
-}
-
-// ============================================
-// CHILDREN MODEL (New)
-// ============================================
-model Children {
-  id          Int       @id @default(autoincrement()) @map("children_id")
-  applicantId Int       @map("applicant_id")
-  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-
-  childName    String    @map("child_name")
-  gender       String? // M, F
-  dateOfBirth  DateTime? @map("date_of_birth")
-  placeOfBirth String?   @map("place_of_birth")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("children")
-}
-
-// ============================================
-// SIBLING MODEL (New)
-// ============================================
-model Sibling {
-  id          Int       @id @default(autoincrement()) @map("sibling_id")
-  applicantId Int       @map("applicant_id")
-  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-
-  siblingName        String    @map("sibling_name")
-  gender             String? // M, F
-  dateOfBirth        DateTime? @map("date_of_birth")
-  countryOfBirth     String?   @map("country_of_birth")
-  countryOfResidency String?   @map("country_of_residency")
-  nationality        String?
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("sibling")
-}
-
-// ============================================
-// OFFENCE CONFINATION MODEL (New)
-// ============================================
-model OffenceConfination {
-  id          Int       @id @default(autoincrement()) @map("offence_confination_id")
-  applicantId Int       @map("applicant_id")
-  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-
-  offenceDesc         String    @map("offence_desc")
-  fineAmount          Decimal?  @map("fine_amount")
-  dateFrom            DateTime? @map("date_from")
-  dateTo              DateTime? @map("date_to")
-  country             String?
-  totalConfinationDay Int?      @map("total_confination_day")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("offence_confination")
-}
-
-// ============================================
-// PARENT MODEL (New)
-// ============================================
-model Parent {
-  id          Int        @id @default(autoincrement()) @map("parent_id")
-  applicantId Int?       @map("applicant_id")
-  applicant   Applicant? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-
-  parentCategory        String?   @map("parent_category") // FATHER, MOTHER
-  parentName            String    @map("parent_name")
-  parentNameBfrMarried  String?   @map("parent_name_bfr_married")
-  dateOfBirth           DateTime? @map("date_of_birth")
-  placeOfBirth          String?   @map("place_of_birth")
-  nationality           String?
-  nationalityNo         String?   @map("nationality_no")
-  dateNationalityObtain DateTime? @map("date_nationality_obtain")
-  nationalityAtBirth    String?   @map("nationality_at_birth")
-  race                  String?
-  religion              String?
-  idNumber              String?   @map("id_number")
-  residency             String?
-  marriedDate           DateTime? @map("married_date")
-  marriedPlace          String?   @map("married_place")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("parent")
-}
-
-// ============================================
-// PRE-APPLICATION MODEL (New)
-// ============================================
-model PreApplication {
-  id          Int       @id @default(autoincrement()) @map("pre_app_id")
-  applicantId Int       @map("applicant_id")
-  applicant   Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-
-  subjectId   Int?      @map("subject_id")
-  status      String? // PRA_DAFTAR, PRA_LENGKAP, TIDAK_LENGKAP
-  submittedAt DateTime? @map("submitted_at")
-  reviewedBy  Int?      @map("reviewed_by")
-  reviewedAt  DateTime? @map("reviewed_at")
-  reviewNotes String?   @map("review_notes")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  // Relations
-  applications Application[]
-
-  @@map("pre_applications")
-}
-
-// ============================================
-// APPLICATION MODEL (Main application table)
-// ============================================
 model Application {
-  id             Int             @id @default(autoincrement()) @map("application_id")
-  preAppId       Int?            @map("pre_app_id")
-  preApplication PreApplication? @relation(fields: [preAppId], references: [id])
+  id                 String              @id @default(uuid())
+  applicationNumber  String              @unique // Auto-generated reference number
 
-  applicationRef  String?   @unique @map("application_ref")
-  applicationType String?   @map("application_type") // KELAHIRAN_LUAR, PERKARA_15_2
-  status          String? // Application statuses from SQL
-  registeredBy    Int?      @map("registered_by")
-  registeredAt    DateTime? @map("registered_at")
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  type               ApplicationType
+  status             ApplicationStatus   @default(DRAFT)
+
+  // Form data (JSON for flexibility)
+  formData           Json?
+
+  // Dates
+  submissionDate     DateTime?
+  reviewStartDate    DateTime?
+  decisionDate       DateTime?
+  completionDate     DateTime?
+
+  // Officer assignments
+  consulatOfficerId  String?
+  registrationOfficerId String?
+
+  // Decision
+  decision           String?             
+  decisionReason     String?             
+
+  // Flags
+  requiresOath       Boolean             @default(false)
+  oathScheduledDate  DateTime?
+  oathCompletedDate  DateTime?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   // Relations
-  documents     Document[]
-  payments      Payment[]
-  biometrics    Biometric[]
-  approvals     Approval[]
-  oathSchedules OathSchedule[]
-  oathRecords   OathRecord[]
-  certificates  Certificate[]
-  notifications Notification[]
+  documents          Document[]
+  payments           Payment[]
+  certificates       Certificate[]
+  workflowHistory    WorkflowHistory[]
 
+  @@index([userId])
+  @@index([applicationNumber])
+  @@index([status])
+  @@index([type])
+  @@index([submissionDate])
   @@map("applications")
 }
 
-// ============================================
-// DOCUMENT MODEL
-// ============================================
 model Document {
-  id            Int          @id @default(autoincrement()) @map("document_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  id                 String                      @id @default(uuid())
 
-  documentType String?   @map("document_type")
-  filePath     String?   @map("file_path")
-  versionNo    Int       @default(1) @map("version_no")
-  status       String? // DIMUATNAIK, DISAHKAN, TIDAK_DISAHKAN, PERLU_TAMBAHAN
-  verifiedBy   Int?      @map("verified_by")
-  verifiedAt   DateTime? @map("verified_at")
-  remarks      String?
+  applicationId      String
+  application        Application                 @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  documentType       DocumentType
+  fileName           String
+  filePath           String                      // Storage path
+  fileSize           Int                         // In bytes
+  mimeType           String
 
+  // OCR Data
+  ocrResult          Json?                       // OCR extracted data
+  ocrProcessedAt     DateTime?
+
+  verificationStatus DocumentVerificationStatus  @default(PENDING)
+  verifiedBy         String?                     // User ID of verifier
+  verifiedAt         DateTime?
+  verificationNotes  String?                     
+
+  uploadedAt         DateTime                    @default(now())
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+
+  @@index([applicationId])
+  @@index([verificationStatus])
   @@map("documents")
 }
 
-// ============================================
-// PAYMENT MODEL
-// ============================================
-model Payment {
-  id            Int          @id @default(autoincrement()) @map("payment_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  billNo        String?   @map("bill_no")
-  amount        Decimal?
-  paymentStatus String?   @map("payment_status") // BELUM_BAYAR, BERJAYA, GAGAL, MENUNGGU
-  gatewayRef    String?   @map("gateway_ref")
-  paidAt        DateTime? @map("paid_at")
-  paymentType   String?   @map("payment_type") // PERMOHONAN, SIJIL
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  // Relations
-  receipts PaymentReceipt[]
-
-  @@map("payments")
-}
-
-// ============================================
-// PAYMENT RECEIPT MODEL (New)
-// ============================================
-model PaymentReceipt {
-  id        Int      @id @default(autoincrement()) @map("receipt_id")
-  paymentId Int?     @map("payment_id")
-  payment   Payment? @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-
-  applicationId Int?      @map("application_id")
-  receiptNo     String?   @unique @map("receipt_no")
-  issuedAt      DateTime? @map("issued_at")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("payment_receipts")
-}
-
-// ============================================
-// BIOMETRIC MODEL
-// ============================================
 model Biometric {
-  id            Int          @id @default(autoincrement()) @map("biometric_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  id                 String              @id @default(uuid())
 
-  biometricType String?   @map("biometric_type") // FINGERPRINT
-  biometricHash String?   @map("biometric_hash")
-  fingerPosition String?  @map("finger_position") // IBU_JARI_KANAN, JARI_TELUNJUK_KANAN, JARI_TENGAH_KANAN, JARI_MANIS_KANAN, JARI_KELINGKING_KANAN, IBU_JARI_KIRI, JARI_TELUNJUK_KIRI, JARI_TENGAH_KIRI, JARI_MANIS_KIRI, JARI_KELINGKING_KIRI
-  status        String? // SAH, TIDAK SAH
-  capturedBy    Int?      @map("captured_by")
-  capturedAt    DateTime? @map("captured_at")
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  // Biometric data (hashed/encrypted)
+  fingerprintHash    String?             
+  faceImagePath      String?
 
+  // Metadata
+  captureDate        DateTime            @default(now())
+  captureLocation    String?             // Consulate location
+  capturedBy         String?             // Officer ID
+  deviceId           String?
+  quality            Int?                // Quality score 0-100
+
+  isVerified         Boolean             @default(false)
+  verifiedAt         DateTime?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([userId])
   @@map("biometrics")
 }
 
-// ============================================
-// APPROVAL MODEL (New)
-// ============================================
-model Approval {
-  id            Int          @id @default(autoincrement()) @map("approval_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+model Payment {
+  id                 String              @id @default(uuid())
+  paymentNumber      String              @unique // Auto-generated
 
-  decision      String? // LULUS, TOLAK, TANGGUH
-  decisionNotes String?   @map("decision_notes")
-  approvedBy    Int?      @map("approved_by")
-  approvedAt    DateTime? @map("approved_at")
+  applicationId      String
+  application        Application         @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  userId             String
+  user               User                @relation("ApplicantPayments", fields: [userId], references: [id])
 
-  @@map("approvals")
+  amount             Decimal             
+  currency           String              @default("MYR")
+
+  status             PaymentStatus       @default(PENDING)
+  method             PaymentMethod?
+
+  // Payment gateway data
+  transactionId      String?             @unique
+  gatewayResponse    Json?
+
+  paidAt             DateTime?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([applicationId])
+  @@index([userId])
+  @@index([status])
+  @@index([transactionId])
+  @@map("payments")
 }
 
-// ============================================
-// OATH SCHEDULE MODEL (New)
-// ============================================
-model OathSchedule {
-  id            Int          @id @default(autoincrement()) @map("schedule_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  oathDate DateTime? @map("oath_date")
-  oathTime String?   @map("oath_time") // SQLite doesn't have TIME type
-  location String?
-  status   String? // DIJADUALKAN, SELESAI, TIDAK_HADIR, DITANGGUH
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  // Relations
-  oathRecords OathRecord[]
-
-  @@map("oath_schedules")
-}
-
-// ============================================
-// OATH RECORD MODEL (New)
-// ============================================
-model OathRecord {
-  id         Int           @id @default(autoincrement()) @map("oath_id")
-  scheduleId Int?          @map("schedule_id")
-  schedule   OathSchedule? @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-
-  officerId     Int?         @map("officer_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id])
-  executedAt    DateTime?    @map("executed_at")
-  remarks       String?
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("oath_records")
-}
-
-// ============================================
-// CERTIFICATE MODEL
-// ============================================
 model Certificate {
-  id            Int          @id @default(autoincrement()) @map("certificate_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id])
+  id                 String              @id @default(uuid())
+  certificateNumber  String              @unique // Official certificate number
 
-  certificateNo String?   @unique @map("certificate_no")
-  issuedBy      Int?      @map("issued_by")
-  issuedAt      DateTime? @map("issued_at")
+  applicationId      String
+  application        Application         @relation(fields: [applicationId], references: [id])
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
 
+  certificateType    CertificateType
+
+  // Certificate data
+  issueDate          DateTime            @default(now())
+  expiryDate         DateTime?
+
+  qrCode             String?              // QR code data for verification
+  filePath           String?             // PDF storage path
+
+  issuedBy           String?             // Officer ID
+  isActive           Boolean             @default(true)
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([certificateNumber])
+  @@index([applicationId])
+  @@index([userId])
   @@map("certificates")
 }
 
-// ============================================
-// NOTIFICATION MODEL
-// ============================================
+model WorkflowHistory {
+  id                 String              @id @default(uuid())
+
+  applicationId      String
+  application        Application         @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  fromStatus         ApplicationStatus?
+  toStatus           ApplicationStatus
+
+  actionBy           String?             // User ID
+  actionByRole       UserRole?
+
+  notes              String?             
+  metadata           Json?
+
+  createdAt          DateTime            @default(now())
+
+  @@index([applicationId])
+  @@index([createdAt])
+  @@map("workflow_history")
+}
+
 model Notification {
-  id            Int          @id @default(autoincrement()) @map("notification_id")
-  applicationId Int?         @map("application_id")
-  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  id                 String              @id @default(uuid())
 
-  recipientType String?   @map("recipient_type") // PEMOHON, PEGAWAI
-  channel       String? // EMAIL, SMS, SYSTEM
-  message       String?
-  status        String? // BERJAYA, GAGAL
-  sentAt        DateTime? @map("sent_at")
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  applicationId      String?
+  applicationNumber  String?
 
+  type               NotificationType
+  status             NotificationStatus  @default(PENDING)
+
+  subject            String
+  message            String
+
+  // Metadata
+  sentAt             DateTime?
+  readAt             DateTime?
+  failureReason      String?
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
   @@map("notifications")
 }
 
-// ============================================
-// AUDIT LOG MODEL
-// ============================================
 model AuditLog {
-  id          Int     @id @default(autoincrement()) @map("audit_id")
-  userId      Int?    @map("user_id")
-  module      String?
-  action      String?
-  referenceId Int?    @map("reference_id")
-  ipAddress   String? @map("ip_address")
+  id                 String              @id @default(uuid())
 
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String    @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
+  userId             String?
+  user               User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  action             AuditAction
+  entityType         String              // e.g., "Application", "User", "Document"
+  entityId           String?
+
+  changes            Json?               // Before/after data
+  metadata           Json?               // Additional context
+
+  ipAddress          String?
+  userAgent          String?             
+
+  createdAt          DateTime            @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
   @@map("audit_logs")
 }
-
-// ============================================
-// WORKFLOW MASTER MODEL (New)
-// ============================================
-model WfWorkflowMaster {
-  workflowCode       String @id @map("wfm_workflow_code")
-  workflowTitle      String @map("wfm_workflow_title")
-  preventSelfProcess Int?   @map("wfm_prevent_self_process")
-  involvePosting     Int    @default(1) @map("wfm_involve_posting")
-  isDashboardAppear  Int?   @default(0) @map("wfm_is_dashboard_appear")
-  dashboardLabel     Int?   @default(0) @map("wfm_dashboard_label")
-  dashboardSequence  Int?   @default(0) @map("wfm_dashboard_sequence")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String?   @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  // Relations
-  workflowDetails WfWorkflowDetails[]
-
-  @@map("wf_workflow_master")
-}
-
-// ============================================
-// WORKFLOW DETAILS MODEL (New)
-// ============================================
-model WfWorkflowDetails {
-  id           Int               @id @default(autoincrement()) @map("wfd_workflow_details_id")
-  workflowCode String?           @map("wfd_workflow_code")
-  workflow     WfWorkflowMaster? @relation(fields: [workflowCode], references: [workflowCode], onDelete: Cascade, onUpdate: Cascade)
-
-  processName         String  @map("wfd_process_name")
-  processDesc         String? @map("wfd_process_desc")
-  sequence            Int     @map("wfd_sequence")
-  isEmailNotification Int?    @default(1) @map("wfd_is_email_notification")
-  notificationId      Int?    @default(1) @map("wfd_notofication_id")
-  isTodoNotification  Int?    @default(1) @map("wfd_is_todo_notification")
-  isByGroup           Int?    @map("wfd_is_by_group")
-  isByGl              Int?    @map("wfd_is_by_gl")
-  isByOrgChart        Int?    @map("wfd_is_by_org_chart")
-  isDigitallySign     Int?    @map("wfd_is_digitally_sign")
-  durationKpi         Int?    @map("wfd_duration_kpi")
-  notes               String? @map("wfd_notes")
-  processedbyDesc     String? @map("wfd_processedby_desc")
-  type                String  @map("wfd_type")
-  status              String  @map("wfd_status")
-  extendedField       Json?   @map("wfd_extended_field")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String?   @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  // Relations
-  processActions WfProcessAction[]
-  processRules   WfProcessRule[]
-  tasks          WfTask[]
-
-  @@unique([workflowCode, processName, sequence])
-  @@map("wf_workflow_details")
-}
-
-// ============================================
-// WORKFLOW PROCESS ACTION MODEL (New)
-// ============================================
-model WfProcessAction {
-  id        Int               @id @default(autoincrement()) @map("wpa_process_action_id")
-  processId Int               @map("wpa_process_id")
-  process   WfWorkflowDetails @relation(fields: [processId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  statusCode     String? @map("wpa_status_code")
-  rerouteProcess Int?    @map("wpa_reroute_process")
-  blToExec       String? @map("wpa_bl_to_exec")
-  order          Int?    @map("wpa_order")
-  extendedField  Json?   @map("wpa_extended_field")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String?   @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@unique([processId, statusCode])
-  @@map("wf_process_action")
-}
-
-// ============================================
-// WORKFLOW PROCESS RULE MODEL (New)
-// ============================================
-model WfProcessRule {
-  id        Int               @id @default(autoincrement()) @map("wpr_workflow_process_rule_id")
-  processId Int               @map("wpr_process_id")
-  process   WfWorkflowDetails @relation(fields: [processId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  ruleCode       String   @map("wpr_rule_code")
-  roleCode       String   @map("wpr_role_code")
-  limitMin       Decimal? @map("wpr_limit_min")
-  limitMax       Decimal? @map("wpr_limit_max")
-  businessRuleId Int?     @map("wpr_business_rule_id")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String?   @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("wf_process_rule")
-}
-
-// ============================================
-// WORKFLOW TASK ACTION LOG MODEL (New)
-// ============================================
-model WfTaskActionLog {
-  id                    Int     @id @default(autoincrement()) @map("wal_task_action_log_id")
-  documentCode          String  @map("wal_document_code")
-  processId             Int     @map("wal_process_id")
-  workflowCode          String? @map("wal_workflow_code")
-  taskId                Int?    @map("wal_task_id")
-  sequence              Int     @map("wal_sequence")
-  status                String  @map("wal_status")
-  statusDesc            String  @map("wal_status_desc")
-  notes                 String? @map("wal_notes")
-  createdbyPositionCode String? @map("wal_createdby_position_code")
-  createdbyPositionDesc String  @map("wal_createdby_position_desc")
-  createdbyPtj          String? @map("wal_createdby_ptj")
-  createdbyPtjDesc      String  @map("wal_createdby_ptj_desc")
-  createdbyName         String  @map("createdby_name")
-  stfStaffId            String? @map("stf_staff_id")
-  stfAdUsername         String? @map("stf_ad_username")
-  pageId                Int     @map("wal_page_id")
-  extendedField         Json?   @map("wal_extended_field")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String?   @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@map("wf_task_action_log")
-}
-
-// ============================================
-// WORKFLOW TASK MODEL (New)
-// ============================================
-model WfTask {
-  id        Int               @id @default(autoincrement()) @map("wtk_task_id")
-  processId Int               @map("wtk_process_id")
-  process   WfWorkflowDetails @relation(fields: [processId], references: [id])
-
-  documentCode  String?   @map("wtk_document_code")
-  workflowCode  String    @map("wtk_workflow_code")
-  taskName      String    @map("wtk_task_name")
-  taskUrl       String?   @map("wtk_task_url")
-  staffId       String    @map("wtk_staff_id")
-  taskType      String    @map("wtk_task_type")
-  status        String    @map("wtk_status")
-  sequence      Int?      @map("wtk_sequence")
-  isAccessing   String?   @map("wtk_is_accessing")
-  acceptedDate  DateTime? @map("wtk_accepteddate")
-  extendedField Json?     @map("wtk_extended_field")
-
-  createdDate DateTime  @default(now()) @map("createddate")
-  createdBy   String?   @map("createdby")
-  updatedDate DateTime? @updatedAt @map("updateddate")
-  updatedBy   String?   @map("updatedby")
-
-  @@index([status])
-  @@index([documentCode])
-  @@index([staffId])
-  @@map("wf_task")
-}
-
-// Old UUID-based Application, Document, Biometric, Payment, Certificate, WorkflowHistory, Notification, AuditLog models removed
-// Consolidated to Int-based Application, Document, Biometric, Payment, Certificate, Notification, AuditLog models

@@ -16,7 +16,7 @@ const error = ref('')
 
 const handleLogin = async () => {
   if (!form.value.email || !form.value.password) {
-    error.value = 'Please fill in all fields'
+    error.value = 'Sila isi semua medan'
     return
   }
 
@@ -39,7 +39,7 @@ const handleLogin = async () => {
       router.push('/')
     }
   } else {
-    error.value = result.error || 'Login failed'
+    error.value = result.error || 'Log masuk gagal'
   }
 }
 
@@ -89,8 +89,8 @@ onMounted(async () => {
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-semibold mb-1">Fast Processing</h3>
-              <p class="text-blue-100 text-sm">Submit and track your citizenship applications efficiently</p>
+              <h3 class="text-lg font-semibold mb-1">Pemprosesan Pantas</h3>
+              <p class="text-blue-100 text-sm">Hantar dan pantau permohonan kewarganegaraan anda dengan cekap</p>
             </div>
           </div>
 
@@ -103,8 +103,8 @@ onMounted(async () => {
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-semibold mb-1">Secure & Reliable</h3>
-              <p class="text-blue-100 text-sm">Your data is protected with enterprise-grade security</p>
+              <h3 class="text-lg font-semibold mb-1">Selamat & Dipercayai</h3>
+              <p class="text-blue-100 text-sm">Data anda dilindungi dengan keselamatan bertaraf korporat</p>
             </div>
           </div>
 
@@ -117,8 +117,8 @@ onMounted(async () => {
               </div>
             </div>
             <div>
-              <h3 class="text-lg font-semibold mb-1">Real-time Updates</h3>
-              <p class="text-blue-100 text-sm">Get notified about your application status instantly</p>
+              <h3 class="text-lg font-semibold mb-1">Kemas Kini Masa Nyata</h3>
+              <p class="text-blue-100 text-sm">Terima pemberitahuan tentang status permohonan anda serta-merta</p>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ onMounted(async () => {
         <!-- Footer text -->
         <div class="mt-auto pt-12">
           <p class="text-blue-200 text-sm">
-            Trusted by thousands of applicants nationwide
+            Dipercayai oleh ribuan pemohon di seluruh negara
           </p>
         </div>
       </div>
@@ -146,10 +146,10 @@ onMounted(async () => {
 
         <div>
           <h2 class="text-3xl font-bold text-gray-900">
-            Welcome back
+            Selamat Kembali
           </h2>
           <p class="mt-2 text-sm text-gray-600">
-            Please sign in to your account to continue
+            Sila log masuk ke akaun anda untuk meneruskan
           </p>
         </div>
 
@@ -170,7 +170,7 @@ onMounted(async () => {
             <!-- Email Input -->
             <div>
               <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                Email address
+                Alamat E-mel
               </label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,7 +186,7 @@ onMounted(async () => {
                   autocomplete="email"
                   required
                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                  placeholder="Enter your email"
+                  placeholder="Masukkan e-mel anda"
                 >
               </div>
             </div>
@@ -194,7 +194,7 @@ onMounted(async () => {
             <!-- Password Input -->
             <div>
               <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                Kata Laluan
               </label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -210,7 +210,7 @@ onMounted(async () => {
                   autocomplete="current-password"
                   required
                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                  placeholder="Enter your password"
+                  placeholder="Masukkan kata laluan anda"
                 >
               </div>
             </div>
@@ -227,7 +227,7 @@ onMounted(async () => {
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              {{ loading ? 'Signing in...' : 'Sign in' }}
+              {{ loading ? 'Sedang log masuk...' : 'Log Masuk' }}
             </button>
           </div>
 
@@ -237,7 +237,7 @@ onMounted(async () => {
               <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-gray-50 text-gray-500">New to SPK?</span>
+              <span class="px-2 bg-gray-50 text-gray-500">Baharu ke SPK?</span>
             </div>
           </div>
 
@@ -247,7 +247,7 @@ onMounted(async () => {
               to="/register"
               class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
             >
-              Create an account
+              Cipta akaun
               <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

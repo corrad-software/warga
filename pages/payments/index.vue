@@ -1,48 +1,11 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-4">
-            <img src="/images/jpn_logo.png" alt="JPN Logo" class="h-12 w-auto hidden sm:block" />
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">My Payments</h1>
-              <p class="text-sm text-gray-600">View your payment history and transaction details</p>
-            </div>
-          </div>
-
-          <!-- Right: Menu -->
-          <nav class="flex items-center space-x-6">
-            <NuxtLink
-              to="/dashboard"
-              class="text-sm font-medium text-gray-700 hover:text-blue-600"
-            >
-              My Applications
-            </NuxtLink>
-            <NuxtLink
-              to="/payments"
-              class="text-sm font-medium text-gray-700 hover:text-blue-600"
-            >
-              My Payments
-            </NuxtLink>
-            <button
-              @click="logout"
-              class="text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              Logout
-            </button>
-          </nav>
-        </div>
-      </div>
-    </header>
-
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Page Title -->
       <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-900">My Payments</h2>
-        <p class="text-gray-600 mt-2">View your payment history and transaction details</p>
+        <h2 class="text-3xl font-bold text-gray-900">Pembayaran</h2>
+        <p class="text-gray-600 mt-2">Lihat sejarah pembayaran dan butiran transaksi anda</p>
       </div>
 
     <!-- Loading State -->
@@ -68,7 +31,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                    Total Spent
+                    Jumlah Dibayar
                   </dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -95,7 +58,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                    Total Payments
+                    Jumlah Pembayaran
                   </dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -122,7 +85,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                    Completed
+                    Selesai
                   </dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -152,7 +115,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                    Pending
+                    Menunggu
                   </dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -172,7 +135,7 @@
       <!-- Payments List -->
       <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Payment History</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Sejarah Pembayaran</h3>
         </div>
 
         <!-- Filter -->
@@ -180,19 +143,19 @@
           <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
               <label for="statusFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Filter by Status
+                Tapis mengikut Status
               </label>
               <select
                 id="statusFilter"
                 v-model="statusFilter"
-                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white focus:border-blue-500 focus:ring-blue-500 text-sm"
               >
-                <option value="">All Statuses</option>
-                <option value="PENDING">Pending</option>
-                <option value="PROCESSING">Processing</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="FAILED">Failed</option>
-                <option value="REFUNDED">Refunded</option>
+                <option value="">Semua Status</option>
+                <option value="PENDING">Menunggu</option>
+                <option value="PROCESSING">Diproses</option>
+                <option value="COMPLETED">Selesai</option>
+                <option value="FAILED">Gagal</option>
+                <option value="REFUNDED">Dikembalikan</option>
               </select>
             </div>
           </div>
@@ -204,22 +167,22 @@
             <thead class="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Payment #
+                  No. Pembayaran
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Application
+                  Permohonan
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Amount
+                  Jumlah
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Method
+                  Kaedah
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Date
+                  Tarikh
                 </th>
               </tr>
             </thead>
@@ -254,8 +217,8 @@
                     <svg class="h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <p class="font-medium">No payments found</p>
-                    <p class="text-xs mt-1">{{ statusFilter ? 'Try adjusting your filter' : 'You have not made any payments yet' }}</p>
+                    <p class="font-medium">Tiada pembayaran dijumpai</p>
+                    <p class="text-xs mt-1">{{ statusFilter ? 'Cuba laraskan penapis anda' : 'Anda belum membuat sebarang pembayaran lagi' }}</p>
                   </div>
                 </td>
               </tr>
@@ -270,8 +233,8 @@
               <svg class="h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <p class="font-medium">No payments found</p>
-              <p class="text-xs mt-1">{{ statusFilter ? 'Try adjusting your filter' : 'You have not made any payments yet' }}</p>
+              <p class="font-medium">Tiada pembayaran dijumpai</p>
+              <p class="text-xs mt-1">{{ statusFilter ? 'Cuba laraskan penapis anda' : 'Anda belum membuat sebarang pembayaran lagi' }}</p>
             </div>
           </div>
           <div v-else class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -286,21 +249,21 @@
               </div>
               <div class="space-y-2">
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-500 dark:text-gray-400">Application:</span>
+                  <span class="text-gray-500 dark:text-gray-400">Permohonan:</span>
                   <NuxtLink :to="`/applications/${payment.application?.id}`" class="text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400">
                     {{ payment.application?.applicationNumber || 'N/A' }}
                   </NuxtLink>
                 </div>
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-500 dark:text-gray-400">Amount:</span>
+                  <span class="text-gray-500 dark:text-gray-400">Jumlah:</span>
                   <span class="font-semibold text-gray-900 dark:text-white">RM {{ formatCurrency(payment.amount) }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-500 dark:text-gray-400">Method:</span>
+                  <span class="text-gray-500 dark:text-gray-400">Kaedah:</span>
                   <span class="text-gray-900 dark:text-white">{{ formatPaymentMethod(payment.method) }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-500 dark:text-gray-400">Date:</span>
+                  <span class="text-gray-500 dark:text-gray-400">Tarikh:</span>
                   <span class="text-gray-900 dark:text-white">{{ formatDate(payment.createdAt) }}</span>
                 </div>
               </div>
@@ -310,15 +273,6 @@
       </div>
     </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <p class="text-center text-sm text-gray-600">
-          © 2025 Sistem Pengurusan Kewarganegaraan (SPK) - Jabatan Pendaftaran Negara Malaysia
-        </p>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -327,7 +281,6 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { logout } = useAuth()
 const loading = ref(true)
 const payments = ref<any[]>([])
 const statusFilter = ref('')
@@ -402,7 +355,7 @@ const formatCurrency = (amount: number | string) => {
 }
 
 const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleDateString('en-MY', {
+  return new Date(date).toLocaleDateString('ms-MY', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
