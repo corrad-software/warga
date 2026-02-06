@@ -643,7 +643,7 @@ model Biometric {
   biometricType String?   @map("biometric_type") // FINGERPRINT
   biometricHash String?   @map("biometric_hash")
   fingerPosition String?  @map("finger_position") // IBU_JARI_KANAN, JARI_TELUNJUK_KANAN, JARI_TENGAH_KANAN, JARI_MANIS_KANAN, JARI_KELINGKING_KANAN, IBU_JARI_KIRI, JARI_TELUNJUK_KIRI, JARI_TENGAH_KIRI, JARI_MANIS_KIRI, JARI_KELINGKING_KIRI
-  status        String? // LENGKAP, TIDAK_LENGKAP, TIDAK_HADIR
+  status        String? // SAH, TIDAK SAH
   capturedBy    Int?      @map("captured_by")
   capturedAt    DateTime? @map("captured_at")
 

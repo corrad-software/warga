@@ -299,19 +299,19 @@ async function main() {
   // SEED BIOMETRICS
   // ============================================
   console.log('Seeding biometrics...')
-  const biometricStatuses = ['LENGKAP', 'TIDAK_LENGKAP', 'TIDAK_HADIR']
+  const biometricStatuses = ['SAH', 'TIDAK SAH']
 
   for (let i = 0; i < applicationIds.length; i++) {
     const appId = applicationIds[i]
-    const status = i < 8 ? 'LENGKAP' : randomItem(biometricStatuses)
+    const status = i < 8 ? 'SAH' : randomItem(biometricStatuses)
     await prisma.biometric.create({
       data: {
         applicationId: appId,
         biometricType: 'FINGERPRINT',
-        biometricHash: status === 'LENGKAP' ? `bio_hash_${appId}_${Date.now()}` : null,
+        biometricHash: status === 'SAH' ? `bio_hash_${appId}_${Date.now()}` : null,
         status: status,
-        capturedBy: status === 'LENGKAP' ? 1 : null,
-        capturedAt: status === 'LENGKAP' ? randomDate(new Date('2024-06-01'), new Date('2025-11-30')) : null,
+        capturedBy: status === 'SAH' ? 1 : null,
+        capturedAt: status === 'SAH' ? randomDate(new Date('2024-06-01'), new Date('2025-11-30')) : null,
         createdBy: 'SYSTEM',
       }
     })
