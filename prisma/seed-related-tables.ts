@@ -252,12 +252,29 @@ async function main() {
         billNo: `BILL-2025-${String(i + 1).padStart(6, '0')}`,
         amount: 100.00,
         paymentStatus: status,
+        paymentType: 'PERMOHONAN',
         gatewayRef: status === 'BERJAYA' ? `FPX-${Date.now()}-${i}` : null,
         paidAt: status === 'BERJAYA' ? randomDate(new Date('2024-05-01'), new Date('2025-09-30')) : null,
         createdBy: 'SYSTEM',
       }
     })
     paymentIds.push(payment.id)
+  }
+  
+  // Add certificate payments for first 3 completed applications
+  for (let i = 0; i < 3; i++) {
+    await prisma.payment.create({
+      data: {
+        applicationId: applicationIds[i],
+        billNo: `CERT-2025-${String(i + 1).padStart(6, '0')}`,
+        amount: 50.00,
+        paymentStatus: 'BERJAYA',
+        paymentType: 'SIJIL',
+        gatewayRef: `FPX-CERT-${Date.now()}-${i}`,
+        paidAt: randomDate(new Date('2024-06-01'), new Date('2025-10-30')),
+        createdBy: 'SYSTEM',
+      }
+    })
   }
   console.log('Payments seeded.')
 

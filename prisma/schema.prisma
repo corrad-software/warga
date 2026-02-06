@@ -377,8 +377,32 @@ model Applicant {
   offenceConfinations OffenceConfination[]
   parents             Parent[]
   preApplications     PreApplication[]
+  education           Education[]
 
   @@map("applicant")
+}
+
+// ============================================
+// EDUCATION MODEL
+// ============================================
+model Education {
+  id               Int       @id @default(autoincrement()) @map("education_id")
+  applicantId      Int       @map("applicant_id")
+  applicant        Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  
+  certificateName  String    @map("certificate_name")
+  startDate        DateTime? @map("start_date")
+  endDate          DateTime? @map("end_date")
+  educationLevel   String?   @map("education_level")
+  institutionName  String?   @map("institution_name")
+  
+  createdDate      DateTime  @default(now()) @map("createddate")
+  createdBy        String    @map("createdby")
+  updatedDate      DateTime? @updatedAt @map("updateddate")
+  updatedBy        String?   @map("updatedby")
+
+  @@index([applicantId])
+  @@map("education")
 }
 
 // ============================================
@@ -575,6 +599,7 @@ model Payment {
   paymentStatus String?   @map("payment_status") // BELUM_BAYAR, BERJAYA, GAGAL, MENUNGGU
   gatewayRef    String?   @map("gateway_ref")
   paidAt        DateTime? @map("paid_at")
+  paymentType   String?   @map("payment_type") // PERMOHONAN, SIJIL
 
   createdDate DateTime  @default(now()) @map("createddate")
   createdBy   String    @map("createdby")
@@ -617,6 +642,7 @@ model Biometric {
 
   biometricType String?   @map("biometric_type") // FINGERPRINT
   biometricHash String?   @map("biometric_hash")
+  fingerPosition String?  @map("finger_position") // IBU_JARI_KANAN, JARI_TELUNJUK_KANAN, JARI_TENGAH_KANAN, JARI_MANIS_KANAN, JARI_KELINGKING_KANAN, IBU_JARI_KIRI, JARI_TELUNJUK_KIRI, JARI_TENGAH_KIRI, JARI_MANIS_KIRI, JARI_KELINGKING_KIRI
   status        String? // LENGKAP, TIDAK_LENGKAP, TIDAK_HADIR
   capturedBy    Int?      @map("captured_by")
   capturedAt    DateTime? @map("captured_at")
