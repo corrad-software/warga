@@ -11,32 +11,40 @@
               <p class="text-sm text-gray-600">View your payment history and transaction details</p>
             </div>
           </div>
-          <div class="flex items-center space-x-4">
+
+          <!-- Right: Menu -->
+          <nav class="flex items-center space-x-6">
             <NuxtLink
               to="/dashboard"
-              class="text-sm font-medium text-gray-700 hover:text-blue-600 hidden sm:block"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
             >
               My Applications
             </NuxtLink>
             <NuxtLink
               to="/payments"
-              class="text-sm font-medium text-blue-600 hidden sm:block"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600"
             >
               My Payments
             </NuxtLink>
             <button
               @click="logout"
-              class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+              class="text-sm font-medium text-gray-700 hover:text-gray-900"
             >
               Logout
             </button>
-          </div>
+          </nav>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Page Title -->
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">My Payments</h2>
+        <p class="text-gray-600 mt-2">View your payment history and transaction details</p>
+      </div>
+
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -302,6 +310,15 @@
       </div>
     </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <p class="text-center text-sm text-gray-600">
+          © 2025 Sistem Pengurusan Kewarganegaraan (SPK) - Jabatan Pendaftaran Negara Malaysia
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -310,7 +327,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { logout, user } = useAuth()
+const { logout } = useAuth()
 const loading = ref(true)
 const payments = ref<any[]>([])
 const statusFilter = ref('')

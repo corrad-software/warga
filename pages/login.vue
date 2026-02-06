@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: false
+})
+
 const { login } = useAuth()
 const router = useRouter()
 
@@ -25,9 +29,11 @@ const handleLogin = async () => {
 
   if (result.success) {
     // Redirect based on role
-    if (result.user.role === 'PEMOHON') {
+    if (result.user.role === 'ADMIN') {
+      router.push('/admin')
+    } else if (result.user.role === 'PEMOHON') {
       router.push('/dashboard')
-    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN', 'ADMIN'].includes(result.user.role)) {
+    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN'].includes(result.user.role)) {
       router.push('/officer/dashboard')
     } else {
       router.push('/')
@@ -41,7 +47,9 @@ const handleLogin = async () => {
 onMounted(async () => {
   const { isAuthenticated, user } = useAuth()
   if (isAuthenticated.value && user.value) {
-    if (user.value.role === 'PEMOHON') {
+    if (user.value.role === 'ADMIN') {
+      router.push('/admin')
+    } else if (user.value.role === 'PEMOHON') {
       router.push('/dashboard')
     } else {
       router.push('/officer/dashboard')
@@ -53,10 +61,9 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen flex">
     <!-- Left Side - Brand Section -->
-    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 relative overflow-hidden">
-      <!-- Decorative circles -->
-      <div class="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
-      <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2"></div>
+    <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-cover bg-center" style="background-image: url('/images/jpn_login.jpg');">
+      <!-- Dark blue gradient overlay for text readability -->
+      <div class="absolute inset-0 opacity-95" style="background: linear-gradient(to bottom right, #0a1929, #1e3a5f, #1e40af);"></div>
 
       <div class="relative z-10 flex flex-col justify-center px-12 py-12 text-white">
         <!-- Logo/Brand -->
