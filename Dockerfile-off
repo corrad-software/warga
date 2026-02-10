@@ -1,0 +1,51 @@
+# Build stage
+FROM node:20-bullseye-slim AS builder
+
+WORKDIR /app
+
+# Native deps for canvas, tesseract.js, etc.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    libcairo2-dev \
+    libjpeg-dev \
+    libpango1.0-dev \
+    libgif-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY package.json package-lock.json* ./
+
+# Prefer npm install so lock file can be out of sync (e.g. Coolify)
+RUN npm install --prefer-offline --no-audit --no-fund
+
+COPY . .
+
+RUN npm run build
+
+# Production stage
+FROM node:20-bullseye-slim AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Runtime deps for Prisma / optional native modules
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    openssl \
+    ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/prisma ./prisma
+
+# Generate Prisma client for production
+RUN npx prisma generate
+
+EXPOSE 3000
+
+CMD ["node", ".output/server/index.mjs"]
