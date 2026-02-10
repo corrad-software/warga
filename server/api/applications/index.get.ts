@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     
     // PEMOHON can only see their own applications
     if (currentUser.role === 'PEMOHON') {
-      where.userId = currentUser.id
+      where.createdBy = currentUser.id
     }
     
     // Add filters
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     }
     
     if (type) {
-      where.type = type
+      where.applicationType = type
     }
     
     // Get applications with pagination
@@ -37,31 +37,23 @@ export default defineEventHandler(async (event) => {
         skip,
         take: limit,
         orderBy: {
-          createdAt: 'desc'
+          createdDate: 'desc'
         },
         include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              name: true,
-              role: true
-            }
-          },
           documents: {
             select: {
               id: true,
               documentType: true,
-              verificationStatus: true,
-              uploadedAt: true
+              status: true,
+              createdDate: true
             }
           },
           payments: {
             select: {
               id: true,
-              paymentNumber: true,
+              billNo: true,
               amount: true,
-              status: true
+              paymentStatus: true
             }
           }
         }

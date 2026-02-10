@@ -33,8 +33,8 @@ const handleLogin = async () => {
       router.push('/admin')
     } else if (result.user.role === 'PEMOHON') {
       router.push('/dashboard')
-    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN'].includes(result.user.role)) {
-      router.push('/officer/dashboard')
+    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN', 'PENGURUSAN_AUDIT', 'PENTADBIR_SISTEM_IT'].includes(result.user.role)) {
+      router.push('/admin')
     } else {
       router.push('/')
     }
@@ -51,8 +51,10 @@ onMounted(async () => {
       router.push('/admin')
     } else if (user.value.role === 'PEMOHON') {
       router.push('/dashboard')
+    } else if (['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN', 'PENGURUSAN_AUDIT', 'PENTADBIR_SISTEM_IT'].includes(user.value.role)) {
+      router.push('/admin')
     } else {
-      router.push('/officer/dashboard')
+      router.push('/')
     }
   }
 })

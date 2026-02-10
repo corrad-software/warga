@@ -179,18 +179,19 @@ export async function getPaymentById(paymentId: string): Promise<any> {
  */
 export async function getPaymentsByApplicationId(applicationId: string): Promise<any[]> {
   const payments = await prisma.payment.findMany({
-    where: { applicationId },
+    where: { applicationId: parseInt(applicationId) },
     include: {
-      user: {
+      application: {
         select: {
           id: true,
-          name: true,
-          email: true
+          applicationRef: true,
+          applicationType: true,
+          status: true
         }
       }
     },
     orderBy: {
-      createdAt: 'desc'
+      createdDate: 'desc'
     }
   })
 
@@ -202,19 +203,19 @@ export async function getPaymentsByApplicationId(applicationId: string): Promise
  */
 export async function getPaymentsByUserId(userId: string): Promise<any[]> {
   const payments = await prisma.payment.findMany({
-    where: { userId },
+    where: { createdBy: userId },
     include: {
       application: {
         select: {
           id: true,
-          applicationNumber: true,
-          type: true,
+          applicationRef: true,
+          applicationType: true,
           status: true
         }
       }
     },
     orderBy: {
-      createdAt: 'desc'
+      createdDate: 'desc'
     }
   })
 

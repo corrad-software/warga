@@ -4,8 +4,17 @@ const router = useRouter()
 
 const expandedMenus = ref<Record<string, boolean>>({})
 
-// Menu sections with category labels for future role-based control
-const navigationSections = [
+// Role-based menu access control
+const roleSectionAccess: Record<string, string[]> = {
+  ADMIN: ['pegawai', 'pengurusan', 'pentadbir'],
+  PEGAWAI_KONSUL: ['pegawai'],
+  PEGAWAI_PENDAFTARAN: ['pegawai'],
+  PENGURUSAN_AUDIT: ['pengurusan'],
+  PENTADBIR_SISTEM_IT: ['pentadbir'],
+}
+
+// Menu sections with category labels
+const allNavigationSections = [
   {
     category: 'pegawai', // Menu Pegawai Konsulat / JPN
     label: 'Pegawai Konsulat / JPN',
@@ -160,8 +169,15 @@ const navigationSections = [
   }
 ]
 
+// Filter sections based on user role
+const navigationSections = computed(() => {
+  const userRole = user.value?.role || ''
+  const allowedSections = roleSectionAccess[userRole] || []
+  return allNavigationSections.filter(section => allowedSections.includes(section.category))
+})
+
 // Flatten navigation for backward compatibility
-const navigation = navigationSections.flatMap(section => section.items)
+const navigation = computed(() => navigationSections.value.flatMap(section => section.items))
 
 const toggleMenu = (itemName: string) => {
   expandedMenus.value[itemName] = !expandedMenus.value[itemName]
@@ -182,7 +198,7 @@ const isParentActive = (children: any[]) => {
 
 // Auto-expand active parent menus
 onMounted(() => {
-  navigation.forEach(item => {
+  navigation.value.forEach(item => {
     if (item.children && isParentActive(item.children)) {
       expandedMenus.value[item.name] = true
     }
@@ -191,7 +207,7 @@ onMounted(() => {
 
 // Watch for route changes to auto-expand
 watch(() => router.currentRoute.value.path, () => {
-  navigation.forEach(item => {
+  navigation.value.forEach(item => {
     if (item.children && isParentActive(item.children)) {
       expandedMenus.value[item.name] = true
     }
