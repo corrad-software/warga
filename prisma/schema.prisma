@@ -17,6 +17,8 @@ enum UserRole {
   PEMOHON // Applicant
   PEGAWAI_KONSUL // Consular Officer
   PEGAWAI_PENDAFTARAN // Registration Officer
+  PENGURUSAN_AUDIT // Management / Audit Officer
+  PENTADBIR_SISTEM_IT // System Administrator / IT
   ADMIN
 }
 

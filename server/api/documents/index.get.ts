@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     const currentUser = await authenticateUser(event)
     const query = getQuery(event)
 
-    const { applicationId, verificationStatus, documentType } = query
+    const { applicationId, status: docStatus, documentType } = query
 
     // Build filter conditions
     const where: any = {}
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     if (currentUser.role === 'PEMOHON') {
       // Get user's applications
       const userApplications = await prisma.application.findMany({
-        where: { userId: currentUser.id },
+        where: { createdBy: currentUser.id },
         select: { id: true }
       })
 
@@ -26,9 +26,10 @@ export default defineEventHandler(async (event) => {
 
     // Filter by applicationId if provided
     if (applicationId) {
+      const appId = parseInt(applicationId as string)
       // Verify access to this application
       const application = await prisma.application.findUnique({
-        where: { id: applicationId as string }
+        where: { id: appId }
       })
 
       if (!application) {
@@ -39,7 +40,7 @@ export default defineEventHandler(async (event) => {
       }
 
       const hasAccess =
-        application.userId === currentUser.id ||
+        application.createdBy === currentUser.id ||
         ['ADMIN', 'PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN'].includes(currentUser.role)
 
       if (!hasAccess) {
@@ -49,12 +50,12 @@ export default defineEventHandler(async (event) => {
         })
       }
 
-      where.applicationId = applicationId as string
+      where.applicationId = appId
     }
 
-    // Filter by verification status
-    if (verificationStatus) {
-      where.verificationStatus = verificationStatus as string
+    // Filter by document status
+    if (docStatus) {
+      where.status = docStatus as string
     }
 
     // Filter by document type
@@ -68,21 +69,14 @@ export default defineEventHandler(async (event) => {
         application: {
           select: {
             id: true,
-            applicationNumber: true,
-            type: true,
-            status: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
-            }
+            applicationRef: true,
+            applicationType: true,
+            status: true
           }
         }
       },
       orderBy: {
-        createdAt: 'desc'
+        createdDate: 'desc'
       }
     })
 

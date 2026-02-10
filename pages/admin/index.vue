@@ -82,7 +82,8 @@ const fetchStats = async () => {
   }
 }
 
-const formatDate = (date: string) => {
+const formatDate = (date: string | null | undefined) => {
+  if (!date) return '-'
   return new Date(date).toLocaleDateString('ms-MY', {
     year: 'numeric',
     month: 'short',
@@ -90,7 +91,8 @@ const formatDate = (date: string) => {
   })
 }
 
-const formatStatus = (status: string) => {
+const formatStatus = (status: string | null | undefined) => {
+  if (!status) return '-'
   const statusMap: Record<string, string> = {
     DRAFT: 'Draf',
     SUBMITTED: 'Dihantar',
@@ -109,7 +111,9 @@ const formatStatus = (status: string) => {
     COMPLETED: 'Selesai',
     BORANG_H: 'Kelahiran Luar Negara',
     BORANG_G: 'Perkara 15(2)',
-    TADBIR_SUMPAH: 'Pentadbiran Sumpah'
+    TADBIR_SUMPAH: 'Pentadbiran Sumpah',
+    KELAHIRAN_LUAR: 'Kelahiran Luar Negara',
+    PERKARA_15_2: 'Perkara 15(2)'
   }
   return statusMap[status] || status.replace(/_/g, ' ')
 }
@@ -615,16 +619,16 @@ onMounted(() => {
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr v-for="app in recentApplications" :key="app.id" class="hover:bg-gray-50">
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                    <NuxtLink :to="`/applications/${app.id}`">{{ app.applicationNumber }}</NuxtLink>
+                    <NuxtLink :to="`/admin/pendaftaran/${app.id}`">{{ app.applicationRef || `#${app.id}` }}</NuxtLink>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ app.user?.name || 'N/A' }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatStatus(app.type) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ app.createdBy || 'N/A' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatStatus(app.applicationType) }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                       {{ formatStatus(app.status) }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(app.createdAt) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(app.createdDate) }}</td>
                 </tr>
               </tbody>
             </table>

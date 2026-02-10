@@ -1,4 +1,5 @@
 import { authenticateUser } from '~/lib/middleware/auth'
+import { prisma } from '~/lib/prisma'
 import { getPaymentsByApplicationId, getPaymentsByUserId } from '~/lib/services/payment'
 
 export default defineEventHandler(async (event) => {
@@ -16,7 +17,7 @@ export default defineEventHandler(async (event) => {
       // Authorization check: only owner or officers can view
       if (payments.length > 0) {
         const firstPayment = payments[0]
-        const isOwner = firstPayment.userId === currentUser.id
+        const isOwner = firstPayment.createdBy === currentUser.id
         const isOfficer = ['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN', 'ADMIN'].includes(currentUser.role)
 
         if (!isOwner && !isOfficer) {
@@ -41,8 +42,27 @@ export default defineEventHandler(async (event) => {
 
       payments = await getPaymentsByUserId(userId as string)
     } else {
-      // No filter provided - get current user's payments
-      payments = await getPaymentsByUserId(currentUser.id)
+      // No filter provided
+      const isOfficer = ['PEGAWAI_KONSUL', 'PEGAWAI_PENDAFTARAN', 'ADMIN'].includes(currentUser.role)
+      if (isOfficer) {
+        // Officers/admin see all payments
+        payments = await prisma.payment.findMany({
+          include: {
+            application: {
+              select: {
+                id: true,
+                applicationRef: true,
+                applicationType: true,
+                status: true
+              }
+            }
+          },
+          orderBy: { createdDate: 'desc' }
+        })
+      } else {
+        // Regular users see only their own payments
+        payments = await getPaymentsByUserId(currentUser.id)
+      }
     }
 
     return {

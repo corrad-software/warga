@@ -4,8 +4,17 @@ const router = useRouter()
 
 const expandedMenus = ref<Record<string, boolean>>({})
 
-// Menu sections with category labels for future role-based control
-const navigationSections = [
+// Role-based menu access control
+const roleSectionAccess: Record<string, string[]> = {
+  ADMIN: ['pegawai', 'pengurusan', 'pentadbir'],
+  PEGAWAI_KONSUL: ['pegawai'],
+  PEGAWAI_PENDAFTARAN: ['pegawai'],
+  PENGURUSAN_AUDIT: ['pengurusan'],
+  PENTADBIR_SISTEM_IT: ['pentadbir'],
+}
+
+// Menu sections with category labels
+const allNavigationSections = [
   {
     category: 'pegawai', // Menu Pegawai Konsulat / JPN
     label: 'Pegawai Konsulat / JPN',
@@ -46,14 +55,23 @@ const navigationSections = [
         icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
       },
       {
-        name: 'Pelaksanaan Angkat Sumpah',
-        href: '/admin/pelaksanaan-sumpah',
-        icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z'
-      },
-      {
         name: 'Pengeluaran Sijil',
         href: '/admin/pengeluaran-sijil',
-        icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'
+        icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z',
+        children: [
+          {
+            name: 'Pengesahan Pengeluaran Sijil',
+            href: '/admin/pengeluaran-sijil/pengesahan'
+          },
+          {
+            name: 'Penjanaan Sijil',
+            href: '/admin/pengeluaran-sijil/penjanaan'
+          },
+          {
+            name: 'Penyerahan Sijil',
+            href: '/admin/pengeluaran-sijil/penyerahan'
+          }
+        ]
       },
       {
         name: 'Pelaporan',
@@ -151,8 +169,15 @@ const navigationSections = [
   }
 ]
 
+// Filter sections based on user role
+const navigationSections = computed(() => {
+  const userRole = user.value?.role || ''
+  const allowedSections = roleSectionAccess[userRole] || []
+  return allNavigationSections.filter(section => allowedSections.includes(section.category))
+})
+
 // Flatten navigation for backward compatibility
-const navigation = navigationSections.flatMap(section => section.items)
+const navigation = computed(() => navigationSections.value.flatMap(section => section.items))
 
 const toggleMenu = (itemName: string) => {
   expandedMenus.value[itemName] = !expandedMenus.value[itemName]
@@ -173,7 +198,7 @@ const isParentActive = (children: any[]) => {
 
 // Auto-expand active parent menus
 onMounted(() => {
-  navigation.forEach(item => {
+  navigation.value.forEach(item => {
     if (item.children && isParentActive(item.children)) {
       expandedMenus.value[item.name] = true
     }
@@ -182,7 +207,7 @@ onMounted(() => {
 
 // Watch for route changes to auto-expand
 watch(() => router.currentRoute.value.path, () => {
-  navigation.forEach(item => {
+  navigation.value.forEach(item => {
     if (item.children && isParentActive(item.children)) {
       expandedMenus.value[item.name] = true
     }
